@@ -28,20 +28,6 @@ body {
   font-family: var(--font-maison), "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  animation: zoomBlurIn 0.6s ease-out forwards;
-}
-
-@keyframes zoomBlurIn {
-  0% {
-    transform: scale(0.8);
-    filter: blur(10px);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    filter: blur(0px);
-    opacity: 1;
-  }
 }
 
 a {

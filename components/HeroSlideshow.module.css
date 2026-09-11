@@ -2,6 +2,16 @@
   position: relative;
   flex: 1;
   overflow: hidden;
+  animation: frameZoomOut 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes frameZoomOut {
+  0% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .slide {
