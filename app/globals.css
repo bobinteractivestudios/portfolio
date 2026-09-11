@@ -1,0 +1,44 @@
+:root {
+  --bg: #ffffff;
+  --fg: #111111;
+  --page-margin: clamp(20px, 4vw, 56px);
+  --header-h: clamp(64px, 7vw, 92px);
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+html {
+  scroll-snap-type: y mandatory;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-maison), "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}

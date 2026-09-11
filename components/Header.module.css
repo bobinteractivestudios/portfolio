@@ -1,0 +1,20 @@
+.header {
+  flex-shrink: 0;
+  height: var(--page-margin);
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: clamp(1.05rem, 1.7vw, 1.5rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  transition: opacity 0.2s ease;
+}
+
+.logo:hover {
+  opacity: 0.65;
+}

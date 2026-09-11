@@ -1,0 +1,25 @@
+.panel {
+  flex-shrink: 0;
+  width: clamp(240px, 32vw, 360px);
+  background: var(--bg);
+  padding: var(--header-h) var(--page-margin) var(--page-margin);
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 2vw, 20px);
+}
+
+.item a {
+  display: inline-block;
+  font-size: clamp(1.2rem, 2.6vw, 1.7rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  transition: opacity 0.2s ease;
+}
+
+.item a:hover {
+  opacity: 0.55;
+}

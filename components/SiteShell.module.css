@@ -1,0 +1,38 @@
+.shell {
+  position: relative;
+}
+
+.hStrip {
+  display: flex;
+  align-items: stretch;
+  width: max-content;
+  transition: transform 0.5s ease-in-out;
+}
+
+.vStrip {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  flex-shrink: 0;
+  transition: transform 0.5s ease-in-out;
+}
+
+.page {
+  background: var(--bg);
+}
+
+.heroScreen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 0 var(--page-margin) var(--page-margin);
+  background: var(--bg);
+  scroll-snap-align: start;
+}
+
+.nextSection {
+  min-height: 100vh;
+  background: var(--bg);
+  scroll-snap-align: start;
+}

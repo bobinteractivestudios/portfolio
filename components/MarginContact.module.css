@@ -1,0 +1,29 @@
+.margin {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--page-margin);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(28px, 5vw, 56px);
+  padding-bottom: var(--page-margin);
+  z-index: 40;
+  pointer-events: none;
+}
+
+.margin a {
+  pointer-events: auto;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+.margin a:hover {
+  opacity: 0.55;
+}

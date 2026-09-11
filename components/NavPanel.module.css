@@ -1,0 +1,48 @@
+.panel {
+  flex-shrink: 0;
+  width: 100%;
+  background: var(--bg);
+}
+
+.inner {
+  padding: var(--page-margin) var(--page-margin) calc(var(--page-margin) * 1.2);
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.6vw, 16px);
+}
+
+.item a {
+  display: inline-block;
+  font-size: clamp(1.3rem, 3.8vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  transition: opacity 0.2s ease;
+}
+
+.item a:hover {
+  opacity: 0.55;
+}
+
+@media (min-width: 860px) {
+  .inner {
+    padding: var(--page-margin) var(--page-margin) calc(var(--page-margin) * 0.7);
+  }
+
+  .list {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: clamp(28px, 4vw, 64px);
+  }
+
+  .item a {
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+}
