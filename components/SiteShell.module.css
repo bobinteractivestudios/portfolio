@@ -28,11 +28,9 @@
   min-height: 100vh;
   padding: 0 var(--page-margin) var(--page-margin);
   background: var(--bg);
-  scroll-snap-align: start;
 }
 
 .nextSection {
   min-height: 100vh;
   background: var(--bg);
-  scroll-snap-align: start;
 }

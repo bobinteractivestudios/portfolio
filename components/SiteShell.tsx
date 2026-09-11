@@ -6,6 +6,7 @@ import NavPanel from "./NavPanel";
 import ProjectsPanel from "./ProjectsPanel";
 import ProjectsTrigger from "./ProjectsTrigger";
 import MarginContact from "./MarginContact";
+import SmoothScroll from "./SmoothScroll";
 import { useMeasure } from "@/lib/useMeasure";
 import styles from "./SiteShell.module.css";
 
@@ -21,6 +22,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className={styles.shell}>
+      <SmoothScroll />
       <div
         className={styles.hStrip}
         style={{ transform: `translateX(${isProjectsOpen ? 0 : -projectsSize.width}px)` }}
@@ -35,7 +37,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
 
           <div className={styles.page}>
             <main>
-              <div className={styles.heroScreen}>
+              <div id="hero-screen" className={styles.heroScreen}>
                 <Header
                   isOpen={isNavOpen}
                   onToggle={() => setActivePanel((p) => (p === "nav" ? "none" : "nav"))}

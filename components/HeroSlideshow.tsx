@@ -48,17 +48,16 @@ export default function HeroSlideshow() {
         key={`in-${activeIndex}`}
         className={styles.slide}
         style={{ backgroundImage: `url(${images[activeIndex]})` }}
-        initial={transitioning ? undefined : { scale: 1.08 }}
         animate={
           transitioning
             ? { scale: [0.86, 0.86, 0.86, 1], x: ["115%", "115%", "0%", "0%"] }
             : { scale: 1, x: "0%" }
         }
-        transition={
-          transitioning
-            ? { duration: DURATION, times: TIMES, ease: "easeInOut" }
-            : { duration: 1.6, ease: "easeOut" }
-        }
+        transition={{
+          duration: DURATION,
+          times: transitioning ? TIMES : undefined,
+          ease: "easeInOut",
+        }}
       />
     </div>
   );
