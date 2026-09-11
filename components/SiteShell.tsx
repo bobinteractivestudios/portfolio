@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "./Header";
 import NavPanel from "./NavPanel";
 import ProjectsPanel from "./ProjectsPanel";
@@ -16,16 +16,30 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   const [activePanel, setActivePanel] = useState<Panel>("none");
   const [navRef, navSize] = useMeasure<HTMLElement>();
   const [projectsRef, projectsSize] = useMeasure<HTMLElement>();
+  const [ready, setReady] = useState(false);
 
   const isNavOpen = activePanel === "nav";
   const isProjectsOpen = activePanel === "projects";
+
+  // The strip's resting transform depends on navSize/projectsSize, which are
+  // only known once the client has measured the panels. The server-rendered
+  // HTML (and the first paint before hydration) can't know that value, so it
+  // would briefly render with a 0px offset - i.e. the panels open. `.hStrip`
+  // stays hidden via CSS by default (no JS required for that part) and is
+  // only revealed here, once we're certain the transform is correct.
+  useEffect(() => {
+    setReady(true);
+  }, []);
 
   return (
     <div className={styles.shell}>
       <SmoothScroll />
       <div
         className={styles.hStrip}
-        style={{ transform: `translateX(${isProjectsOpen ? 0 : -projectsSize.width}px)` }}
+        style={{
+          transform: `translateX(${isProjectsOpen ? 0 : -projectsSize.width}px)`,
+          visibility: ready ? "visible" : "hidden",
+        }}
       >
         <ProjectsPanel ref={projectsRef} isOpen={isProjectsOpen} />
 
