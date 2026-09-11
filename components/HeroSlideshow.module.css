@@ -11,3 +11,11 @@
   background-position: center;
   will-change: transform;
 }
+
+.frame > .slide:last-child {
+  cursor: grab;
+}
+
+.frame > .slide:last-child:active {
+  cursor: grabbing;
+}
