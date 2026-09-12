@@ -7,6 +7,7 @@ import ProjectsPanel from "./ProjectsPanel";
 import ProjectsTrigger from "./ProjectsTrigger";
 import MarginContact from "./MarginContact";
 import SmoothScroll from "./SmoothScroll";
+import About from "./About";
 import { useMeasure } from "@/lib/useMeasure";
 import styles from "./SiteShell.module.css";
 
@@ -65,7 +66,9 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
                 />
                 <MarginContact />
               </div>
-              <section className={styles.nextSection} />
+              <section className={styles.nextSection}>
+                <About />
+              </section>
             </main>
           </div>
         </div>

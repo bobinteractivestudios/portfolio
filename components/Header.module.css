@@ -3,6 +3,7 @@
   height: var(--page-margin);
   display: flex;
   align-items: flex-end;
+  justify-content: space-between;
   overflow: hidden;
 }
 
@@ -16,5 +17,20 @@
 }
 
 .logo:hover {
+  opacity: 0.65;
+}
+
+.social {
+  display: flex;
+  color: var(--fg);
+  transition: opacity 0.2s ease;
+}
+
+.social svg {
+  width: clamp(1.1rem, 1.7vw, 1.5rem);
+  height: clamp(1.1rem, 1.7vw, 1.5rem);
+}
+
+.social:hover {
   opacity: 0.65;
 }
