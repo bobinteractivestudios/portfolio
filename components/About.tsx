@@ -13,7 +13,7 @@ const skills = [
 ];
 
 const introLines = [
-  "Hi, ik ben Bob. Ik ben een nieuwsgierig en ijverig iemand die graag creatief bezig is in verschillende gebieden.",
+  "Hi, ik ben Bob. Ik ben een leergierig en ijverig iemand die graag creatief bezig is in verschillende gebieden.",
   "Deze website etaleert wat van mijn werken. Ik ben beschikbaar voor verschillende diensten.",
   "Neem gerust contact met me op en hopelijk kan ik iets voor jou betekenen.",
 ];
