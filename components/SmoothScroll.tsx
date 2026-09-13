@@ -10,6 +10,7 @@ export default function SmoothScroll() {
       easing: (t: number) => 1 - Math.pow(1 - t, 4),
       wheelMultiplier: 0.7,
       smoothWheel: true,
+      anchors: true,
     });
 
     let rafId: number;

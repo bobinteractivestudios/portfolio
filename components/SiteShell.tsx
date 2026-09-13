@@ -66,7 +66,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
                 />
                 <MarginContact />
               </div>
-              <section className={styles.nextSection}>
+              <section id="about" className={styles.nextSection}>
                 <About />
               </section>
             </main>
