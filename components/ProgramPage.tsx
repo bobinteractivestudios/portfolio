@@ -134,8 +134,7 @@ const sections: Section[] = [
       "Geen visie top-down en ideologisch doorvoeren zonder dat die aan haalbaarheid is getoetst. Als de omslag in energie ons de armoede in sleept, is het verstandiger te wachten op toekomstige innovaties en onze bestaande voorzieningen en voorraden te behouden — een hybride weg. Ook het klimaatnarratief en de paniekstemmingmakerij eromheen met een korrel zout nemen.",
     ],
     points: [
-      "Stoppen met overheidsbemoeienis met energie en klimaatpaniekzaaierij",
-      "Gas uit Groningen gebruiken en Groningers ruim compenseren",
+      "Gas uit Groningen gebruiken en Groningers ruim compenseren"
     ],
   },
   {
