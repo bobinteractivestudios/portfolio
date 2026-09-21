@@ -61,7 +61,10 @@ const sections: Section[] = [
         ],
       },
     ],
-    points: ["Een diplomatieke en strategische houding in het Oekraïne conflict."],
+    points: [
+      "Een diplomatieke en strategische houding in het Oekraïne conflict.",
+      "Rusland niet voortdurend demoniseren."
+    ],
   },
   {
     id: "eu",
@@ -117,6 +120,7 @@ const sections: Section[] = [
     title: "Klimaat & milieu",
     body: [
       "Het is goed om milieuhygiëne te hanteren: minder (nano)plastic, controle op giftige stoffen, en ziekteverwekkende stoffen uit de maatschappij weren.",
+      "geen paniekzaaiing over het klimaat"
     ],
   },
   {
