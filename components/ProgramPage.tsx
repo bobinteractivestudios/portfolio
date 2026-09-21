@@ -120,8 +120,28 @@ const sections: Section[] = [
     ],
   },
   {
-    id: "wonen",
+    id: "immigratie",
     index: "09",
+    title: "Immigratie & demografie",
+    body: [
+      "Dit is de grootste politieke fout van de laatste decennia — een globalistisch bijproduct dat ons sociaal en politiek kwetsbaar heeft gemaakt.",
+      "Europa en de Anglosfeer vormen de Westerse beschaving. Wij geloven dat de Westerse beschaving in oorsprong voor Europeanen is. Daarom is het belangrijk dat we acuut stoppen met de massa-immigratie en de juiste maatregelen nemen om te zorgen dat Europa ook Europa blijft.",
+      "Vluchtelingen vangen we op aan de grens. Nieuwkomers maken we zelf. Alle positieve-diversiteitsmaatregelen halen we weg, en langzaam zetten we in op het stimuleren van remigratie.",
+    ],
+    points: [
+      "Stoppen met het verlenen van asiel",
+      "Mensen die er zijn terugsturen naar het land van herkomst",
+      "VN-vluchtelingenverdrag en het Marrakeshpact opzeggen",
+      "Regels van de Europese Unie negeren, eventueel procederen of in het ergste geval een boete betalen",
+      "Opvang aan de grens realiseren",
+      "Illegaliteit strafbaar stellen",
+      "Landen die weigeren terug te nemen, straffen met sancties",
+      "Remigratie voor mensen die hier niet aarden",
+    ],
+  },
+  {
+    id: "wonen",
+    index: "10",
     title: "Wonen",
     body: [
       "De woningcrisis is mede veroorzaakt doordat het inheemse geboortecijfer niet stijgt terwijl de bevolking wel groeit. We willen niet in paniek grote aantallen slechte prefabwoningen bouwen zoals tijdens de wederopbouw — dat is immers ook niet bepaald duurzaam.",
@@ -130,7 +150,7 @@ const sections: Section[] = [
   },
   {
     id: "sociaal",
-    index: "10",
+    index: "11",
     title: "Sociaal",
     body: [
       "Er moet een basislevensstandaard zijn voor elke burger van Nederland — iedereen heeft recht op onderdak en voedsel. Mocht AI de economie drastisch veranderen, dan zouden we eventueel naar een UBI (universeel basisinkomen) kunnen kijken, maar dat is nog toekomstmuziek. Uiteraard krijgen mensen geen overheidssteun om die vervolgens te vergokken of aan drugs of andere zinloze zaken uit te geven.",
@@ -138,7 +158,7 @@ const sections: Section[] = [
   },
   {
     id: "onderwijs",
-    index: "11",
+    index: "12",
     title: "Onderwijs",
     body: [
       "Onderwijs gewoon goed maken — alle softe onzin eruit. En ook de vrijheid voor thuisonderwijs openstellen.",
@@ -147,7 +167,7 @@ const sections: Section[] = [
   },
   {
     id: "ondernemen",
-    index: "12",
+    index: "13",
     title: "Ondernemen",
     body: [
       "Ondernemen is innovatie en kan leiden tot grote doorbraken — een non-lineair proces. We moeten ondernemen in ons land altijd stimuleren, en niet lastigvallen met ontelbare drempels en regelgeving.",
@@ -156,7 +176,7 @@ const sections: Section[] = [
   },
   {
     id: "economie",
-    index: "13",
+    index: "14",
     title: "Economie",
     body: [
       "Verstandig economisch beleid voeren, zoals de Zwitserse bank. Geen oneindige groei nastreven, en de cyclus van schuldenbubbels stoppen door geldcreatie ('quantitative easing') aan banden te leggen.",
