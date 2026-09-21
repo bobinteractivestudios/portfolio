@@ -120,7 +120,7 @@ const sections: Section[] = [
     title: "Klimaat & milieu",
     body: [
       "Het is goed om milieuhygiëne te hanteren: minder (nano)plastic, controle op giftige stoffen, en ziekteverwekkende stoffen uit de maatschappij weren.",
-      "geen paniekzaaiing over het klimaat"
+      "geen paniekzaaiing over het klimaat",
     ],
   },
   {
