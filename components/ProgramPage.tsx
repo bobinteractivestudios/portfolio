@@ -24,6 +24,7 @@ type Section = {
 
 const intro = {
   kicker: "Algehele lijn",
+  slogan: "Zekerheid, groei en waardigheid",
   body: "Het behouden en versterken van essentiële voorzieningen, voor zekerheid. De markt open houden voor ondernemers en innovatie, voor groei. Het sociale systeem behouden voor de benadeelden, zodat iedereen een beschaafde levensstandaard heeft.",
 };
 
@@ -262,6 +263,7 @@ export default function ProgramPage() {
       <header className={styles.hero}>
         <span className={styles.kicker}>{intro.kicker}</span>
         <h1 className={styles.title}>Programma</h1>
+        <p className={styles.slogan}>{intro.slogan}</p>
         <motion.p
           className={styles.introText}
           initial="hidden"

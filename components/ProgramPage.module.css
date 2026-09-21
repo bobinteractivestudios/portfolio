@@ -60,6 +60,15 @@
   letter-spacing: -0.02em;
 }
 
+.slogan {
+  font-weight: 300;
+  font-size: clamp(1.3rem, 3vw, 2.1rem);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.58);
+}
+
 .introText {
   font-weight: 700;
   font-size: clamp(1.25rem, 2.6vw, 1.9rem);
