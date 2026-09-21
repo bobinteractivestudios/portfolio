@@ -17,8 +17,9 @@ type Section = {
   id: string;
   index: string;
   title: string;
-  body: string[];
+  body?: string[];
   points?: string[];
+  subsections?: { label: string; body: string[] }[];
 };
 
 const intro = {
@@ -40,13 +41,24 @@ const sections: Section[] = [
     ],
   },
   {
-    id: "oekraine",
+    id: "internationaal",
     index: "02",
-    title: "Oekraïne",
-    body: [
-      "Eventueel onderhandelen om het kleine Russisch-talige stukje aan Rusland te geven — maar de rest dan ook meteen dichtsluiten en NAVO maken. Zo ontstaat een verstandhouding voor de toekomst. We moeten zowel strategisch als diplomatiek slim met de situatie omgaan: Rusland niet uitlokken, maar het ook niet onnodig in een strategisch voordeel zetten.",
-      "Het beste is een goed diplomatiek gesprek waarin de belangen van beide partijen eerlijk op tafel komen. De vraag daaruit is: kunnen we Ruslands belangen bevredigen en uitsluiten dat dit een gevaar voor de EU wordt? Blijkt er toch een imperialistische ambitie, dan gaan we door met het verzwakken van Rusland in het belang van de Europese veiligheid.",
-      "Rusland, dat op sommige vlakken dezelfde toon aanslaat als extreem-rechts, zal wellicht positiever tegenover ons komen te staan als we ook interne kwesties zoals immigratie aanpakken. We moeten dus ook peilen in welke mate er sprake is van een culturele of waardenbotsing.",
+    title: "Internationaal",
+    subsections: [
+      {
+        label: "Oekraïne",
+        body: [
+          "Eventueel onderhandelen om het kleine Russisch-talige stukje aan Rusland te geven — maar de rest dan ook meteen dichtsluiten en NAVO maken. Zo ontstaat een verstandhouding voor de toekomst. We moeten zowel strategisch als diplomatiek slim met de situatie omgaan: Rusland niet uitlokken, maar het ook niet onnodig in een strategisch voordeel zetten.",
+          "Het beste is een goed diplomatiek gesprek waarin de belangen van beide partijen eerlijk op tafel komen. De vraag daaruit is: kunnen we Ruslands belangen bevredigen en uitsluiten dat dit een gevaar voor de EU wordt? Blijkt er toch een imperialistische ambitie, dan gaan we door met het verzwakken van Rusland in het belang van de Europese veiligheid.",
+          "Rusland, dat op sommige vlakken dezelfde toon aanslaat als extreem-rechts, zal wellicht positiever tegenover ons komen te staan als we ook interne kwesties zoals immigratie aanpakken. We moeten dus ook peilen in welke mate er sprake is van een culturele of waardenbotsing.",
+        ],
+      },
+      {
+        label: "Middenoosten",
+        body: [
+          "Als Nederland hebben we weinig invloed op en te maken met de geopolitiek in het Midden-Oosten. We nemen een gereserveerde houding aan — we hebben immers onze eigen problemen.",
+        ],
+      },
     ],
     points: ["Rusland niet demoniseren"],
   },
@@ -297,9 +309,22 @@ export default function ProgramPage() {
               <span className={styles.sectionIndex}>{section.index}</span>
               <h2 className={styles.sectionTitle}>{section.title}</h2>
               <div className={styles.sectionBody}>
-                {section.body.map((paragraph, i) => (
-                  <p key={i}>{paragraph}</p>
-                ))}
+                {section.subsections ? (
+                  <div className={styles.subsections}>
+                    {section.subsections.map((sub) => (
+                      <div key={sub.label} className={styles.subsection}>
+                        <span className={styles.subLabel}>{sub.label}</span>
+                        {sub.body.map((paragraph, i) => (
+                          <p key={i}>{paragraph}</p>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  section.body?.map((paragraph, i) => (
+                    <p key={i}>{paragraph}</p>
+                  ))
+                )}
               </div>
               {section.points && (
                 <ul className={styles.points}>
