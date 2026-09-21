@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { SHOW_PERSONAL_INFO } from "@/lib/personalInfo";
 
 const maisonNeue = localFont({
   src: [
@@ -11,10 +12,15 @@ const maisonNeue = localFont({
   variable: "--font-maison",
 });
 
-export const metadata: Metadata = {
-  title: "Bob van Boekel",
-  description: "Portfolio of Bob van Boekel",
-};
+export const metadata: Metadata = SHOW_PERSONAL_INFO
+  ? {
+      title: "Bob van Boekel",
+      description: "Portfolio of Bob van Boekel",
+    }
+  : {
+      title: "Portfolio",
+      description: "Portfolio",
+    };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
