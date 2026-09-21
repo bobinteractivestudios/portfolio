@@ -346,7 +346,9 @@ export default function ProgramPage() {
       </div>
 
       <footer className={styles.footer}>
-        <Link href="/">Bob van Boekel</Link>
+        <Link href="/" className={styles.footerName}>
+          Bob van Boekel
+        </Link>
         <div className={styles.footerContact}>
           <a href="tel:+31651775569">06 51 77 55 69</a>
           <a href="mailto:bob@van-boekel.nl">bob@van-boekel.nl</a>
