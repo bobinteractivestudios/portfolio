@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { SHOW_PERSONAL_INFO } from "@/lib/personalInfo";
@@ -21,6 +21,13 @@ export const metadata: Metadata = SHOW_PERSONAL_INFO
       title: "Portfolio",
       description: "Portfolio",
     };
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#121212" },
+  ],
+};
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

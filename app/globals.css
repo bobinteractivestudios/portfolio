@@ -1,9 +1,21 @@
 :root {
   --bg: #ffffff;
   --fg: #111111;
+  --fg-rgb: 17, 17, 17;
+  --portrait-placeholder: #e5e5e5;
   --page-margin: clamp(20px, 4vw, 56px);
   --header-h: clamp(64px, 7vw, 92px);
   color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121212;
+    --fg: #f2f2f0;
+    --fg-rgb: 242, 242, 240;
+    --portrait-placeholder: #2a2a2a;
+    color-scheme: dark;
+  }
 }
 
 * {
