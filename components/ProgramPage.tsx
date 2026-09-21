@@ -61,7 +61,7 @@ const sections: Section[] = [
         ],
       },
     ],
-    points: ["Rusland niet demoniseren"],
+    points: ["Een diplomatieke en strategische houding in het Oekraïne conflict."],
   },
   {
     id: "eu",
