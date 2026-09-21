@@ -4,7 +4,6 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useAnimationFrame, useMotionValue, type Variants } from "framer-motion";
 import styles from "./About.module.css";
-import { SHOW_PERSONAL_INFO } from "@/lib/personalInfo";
 
 const skills = [
   "Architectonisch ontwerp (villa’s, interieur)",
@@ -72,56 +71,54 @@ export default function About() {
 
   return (
     <div className={styles.about} ref={aboutRef}>
-      {SHOW_PERSONAL_INFO && (
-        <div className={styles.top}>
-          <motion.div
-            className={styles.intro}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.4 }}
-            variants={introList}
-          >
-            {introLines.map((line, index) => (
-              <span key={index} className={styles.lineMask}>
-                <motion.span
-                  className={styles.line}
-                  variants={lineReveal}
-                  transition={{ duration: 0.8, ease: EASE }}
-                >
-                  {line}
-                </motion.span>
-              </span>
-            ))}
-          </motion.div>
-
-          <div className={styles.portraitWrap} ref={portraitWrapRef}>
-            <motion.div
-              ref={portraitFollowerRef}
-              className={styles.portraitFollower}
-              style={{ y: portraitY }}
-            >
-              <motion.div
-                className={styles.portrait}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.4 }}
-                variants={fadeUp}
-                transition={{ duration: 0.9, ease: EASE, delay: 0.15 }}
+      <div className={styles.top}>
+        <motion.div
+          className={styles.intro}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.4 }}
+          variants={introList}
+        >
+          {introLines.map((line, index) => (
+            <span key={index} className={styles.lineMask}>
+              <motion.span
+                className={styles.line}
+                variants={lineReveal}
+                transition={{ duration: 0.8, ease: EASE }}
               >
-                <Image
-                  src="/images/portrait.jpg"
-                  alt="Bob van Boekel"
-                  fill
-                  sizes="(max-width: 700px) 40vw, 220px"
-                  className={styles.portraitImage}
-                  style={{ objectFit: "cover" }}
-                  priority={false}
-                />
-              </motion.div>
+                {line}
+              </motion.span>
+            </span>
+          ))}
+        </motion.div>
+
+        <div className={styles.portraitWrap} ref={portraitWrapRef}>
+          <motion.div
+            ref={portraitFollowerRef}
+            className={styles.portraitFollower}
+            style={{ y: portraitY }}
+          >
+            <motion.div
+              className={styles.portrait}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.4 }}
+              variants={fadeUp}
+              transition={{ duration: 0.9, ease: EASE, delay: 0.15 }}
+            >
+              <Image
+                src="/images/portrait.jpg"
+                alt="Bob van Boekel"
+                fill
+                sizes="(max-width: 700px) 40vw, 220px"
+                className={styles.portraitImage}
+                style={{ objectFit: "cover" }}
+                priority={false}
+              />
             </motion.div>
-          </div>
+          </motion.div>
         </div>
-      )}
+      </div>
 
       <div className={styles.skillsBlock}>
         <motion.span
