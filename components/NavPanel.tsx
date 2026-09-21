@@ -12,6 +12,11 @@ const NavPanel = forwardRef<HTMLElement, { isOpen: boolean }>(function NavPanel(
       <div className={styles.inner}>
         <ul className={styles.list}>
           <li className={styles.item}>
+            <a href="/program" tabIndex={isOpen ? 0 : -1}>
+              Programma
+            </a>
+          </li>
+          <li className={styles.item}>
             <a href="#about" tabIndex={isOpen ? 0 : -1}>
               Contact
             </a>
