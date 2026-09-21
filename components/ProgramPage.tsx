@@ -36,7 +36,11 @@ const sections: Section[] = [
     body: [
       "De stikstofimpasse is voorbij. We hanteren dezelfde stikstofnorm als Duitsland, zodat de implicaties van de EU-regel eerlijk zijn voor alle deelstaten. Zo behouden we onze boeren, ons boerenlandschap, en een grote eigen voedselproductie die ons zelfstandig en voedselzeker houdt. Een essentieel goed.",
     ],
-    points: ["Stikstofnorm herinterpreteren zoals Duitsland"],
+    points: [
+      "Stikstofnorm herinterpreteren zoals Duitsland",
+      "Level playing field voor boeren, niet strenger normeren dan collega’s elders in de EU",
+      "AERIUS-model in de prullenbak",
+    ],
   },
   {
     id: "internationaal",
@@ -73,8 +77,6 @@ const sections: Section[] = [
     points: [
       "Beperkingen op stikstof negeren, boetes aanvaarden",
       "Eventueel de EU verlaten",
-      "Level playing field voor boeren, niet strenger normeren dan collega’s elders in de EU",
-      "AERIUS-model in de prullenbak",
     ],
   },
   {
