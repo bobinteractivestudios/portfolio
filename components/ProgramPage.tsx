@@ -36,10 +36,7 @@ const sections: Section[] = [
     body: [
       "De stikstofimpasse is voorbij. We hanteren dezelfde stikstofnorm als Duitsland, zodat de implicaties van de EU-regel eerlijk zijn voor alle deelstaten. Zo behouden we onze boeren, ons boerenlandschap, en een grote eigen voedselproductie die ons zelfstandig en voedselzeker houdt. Een essentieel goed.",
     ],
-    points: [
-      "Stikstofnorm herinterpreteren zoals Duitsland",
-      "Indien nodig, de stikstofnorm in de reet van de EU steken",
-    ],
+    points: ["Stikstofnorm herinterpreteren zoals Duitsland"],
   },
   {
     id: "internationaal",
@@ -63,7 +60,7 @@ const sections: Section[] = [
     ],
     points: [
       "Een diplomatieke en strategische houding in het Oekraïne conflict.",
-      "Rusland niet voortdurend demoniseren."
+      "Belangen Rusland in kaart brengen, en kijken naar mogelijkheden voor vrede.",
     ],
   },
   {
@@ -76,6 +73,8 @@ const sections: Section[] = [
     points: [
       "Beperkingen op stikstof negeren, boetes aanvaarden",
       "Eventueel de EU verlaten",
+      "Level playing field voor boeren, niet strenger normeren dan collega’s elders in de EU",
+      "AERIUS-model in de prullenbak",
     ],
   },
   {
