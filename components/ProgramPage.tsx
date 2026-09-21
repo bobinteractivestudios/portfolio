@@ -25,7 +25,7 @@ type Section = {
 const intro = {
   kicker: "Algehele lijn",
   slogan: "Zekerheid, groei en waardigheid",
-  body: "Het behouden en versterken van essentiële voorzieningen, voor zekerheid. De markt open houden voor ondernemers en innovatie, voor groei. Het sociale systeem behouden voor de benadeelden, zodat iedereen een beschaafde levensstandaard heeft.",
+  body: "Het behouden en versterken van essentiële voorzieningen, voor zekerheid. De markt open houden voor ondernemers en innovatie, voor groei. Het sociale systeem behouden voor de benadeelden, voor een waardig bestaan.",
 };
 
 const sections: Section[] = [
