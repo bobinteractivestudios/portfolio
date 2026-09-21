@@ -124,7 +124,7 @@ const sections: Section[] = [
     index: "09",
     title: "Immigratie & demografie",
     body: [
-      "Dit is de grootste politieke fout van de laatste decennia — een globalistisch bijproduct dat ons sociaal en politiek kwetsbaar heeft gemaakt.",
+      "De massa-immigratie is de grootste politieke fout van de laatste decennia — een globalistisch bijproduct dat ons sociaal en politiek kwetsbaar heeft gemaakt.",
       "Europa en de Anglosfeer vormen de Westerse beschaving. Wij geloven dat de Westerse beschaving in oorsprong voor Europeanen is. Daarom is het belangrijk dat we acuut stoppen met de massa-immigratie en de juiste maatregelen nemen om te zorgen dat Europa ook Europees blijft.",
       "Vluchtelingen vangen we op aan de grens. Nieuwkomers maken we zelf. Alle positieve-diversiteitsmaatregelen halen we weg, en langzaam zetten we in op het stimuleren van remigratie.",
     ],
