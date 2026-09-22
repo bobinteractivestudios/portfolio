@@ -10,6 +10,7 @@ const skills = [
   "DJ sessies (house muziek)",
   "Websites",
   "Grafische vormgeving",
+  "Bijles (wiskunde)",
 ];
 
 const introLines = [
