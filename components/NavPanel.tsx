@@ -1,6 +1,7 @@
 "use client";
 
 import { forwardRef } from "react";
+import Link from "next/link";
 import styles from "./NavPanel.module.css";
 
 const NavPanel = forwardRef<HTMLElement, { isOpen: boolean }>(function NavPanel(
@@ -15,6 +16,11 @@ const NavPanel = forwardRef<HTMLElement, { isOpen: boolean }>(function NavPanel(
             <a href="/program" tabIndex={isOpen ? 0 : -1}>
               Programma
             </a>
+          </li>
+          <li className={styles.item}>
+            <Link href="/blog" tabIndex={isOpen ? 0 : -1}>
+              Blog
+            </Link>
           </li>
           <li className={styles.item}>
             <a href="#about" tabIndex={isOpen ? 0 : -1}>
