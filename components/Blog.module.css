@@ -186,27 +186,3 @@
   opacity: 0.55;
 }
 
-.footer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  margin-top: clamp(48px, 8vw, 96px);
-  padding-top: clamp(24px, 4vw, 40px);
-  border-top: 1px solid rgba(var(--fg-rgb), 0.1);
-  font-size: 0.85rem;
-}
-
-.footer a {
-  transition: opacity 0.2s ease;
-}
-
-.footer a:hover {
-  opacity: 0.6;
-}
-
-.footerContact {
-  display: flex;
-  gap: clamp(16px, 3vw, 32px);
-}

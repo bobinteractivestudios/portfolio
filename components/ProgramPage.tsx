@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Footer from "./Footer";
 import { motion, useAnimationFrame, useMotionValue, type Variants } from "framer-motion";
 import SmoothScroll from "./SmoothScroll";
 import styles from "./ProgramPage.module.css";
@@ -346,13 +347,7 @@ export default function ProgramPage() {
         </div>
       </div>
 
-      <footer className={styles.footer}>
-        <Link href="/">Bob van Boekel</Link>
-        <div className={styles.footerContact}>
-          <a href="tel:+31651775569">06 51 77 55 69</a>
-          <a href="mailto:bob@van-boekel.nl">bob@van-boekel.nl</a>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
