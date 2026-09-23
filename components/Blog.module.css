@@ -138,12 +138,38 @@
   color: rgba(var(--fg-rgb), 0.82);
 }
 
-.body p:first-child {
+.body > p:first-child {
   font-weight: 700;
   font-size: clamp(1.15rem, 2vw, 1.45rem);
   line-height: 1.4;
   letter-spacing: -0.01em;
   color: var(--fg);
+}
+
+.quote {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: clamp(12px, 2vw, 24px);
+  padding-left: clamp(18px, 3vw, 32px);
+  border-left: 2px solid rgba(var(--fg-rgb), 0.15);
+}
+
+.quote blockquote {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.55;
+  color: rgba(var(--fg-rgb), 0.5);
+}
+
+.caption {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  opacity: 0.4;
 }
 
 .allPosts {

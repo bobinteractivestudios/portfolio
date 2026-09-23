@@ -37,6 +37,16 @@ export default async function BlogPost({ params }: PageProps<"/blog/[slug]">) {
       </header>
 
       <div className={styles.body}>
+        {post.quote && (
+          <figure className={styles.quote}>
+            <blockquote>
+              {post.quote.text.map((line, i) => (
+                <p key={i}>{line}</p>
+              ))}
+            </blockquote>
+            <figcaption className={styles.caption}>{post.quote.source}</figcaption>
+          </figure>
+        )}
         {post.body.map((paragraph, i) => (
           <p key={i}>{paragraph}</p>
         ))}

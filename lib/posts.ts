@@ -3,6 +3,11 @@ export type Post = {
   title: string;
   date: string; // ISO yyyy-mm-dd
   body: string[];
+  // Optional, shown above the body in place of the bold intro paragraph.
+  quote?: {
+    text: string[];
+    source: string;
+  };
 };
 
 const lorem = [
@@ -25,7 +30,15 @@ export const posts: Post[] = [
     slug: "omvolking-en-remigratie",
     title: "Omvolking en remigratie",
     date: "2026-09-10",
-    body: lorem,
+    body: lorem.slice(1),
+    quote: {
+      text: [
+        "Rechts-extremisten proberen grotere groepen aan te spreken door online, via de politiek en de media een zachtere versie van hun denkbeelden te etaleren. Daarvoor waarschuwen de AIVD en NCTV.",
+        "Als voorbeeld noemen zij het gebruik van woorden als ‘remigratie’ en ‘omvolking’; woorden die een extremere betekenis hebben dan vaak wordt erkend door diegenen die ze gebruiken.",
+        "Onder extreemrechts gedachtegoed verstaan AIVD en NCTV het denken waarin witte superioriteit centraal staat, net als haat tegen andersdenkenden. De AIVD en NCTV willen mensen ervan bewust maken dat het normaliseren hiervan invloed kan hebben op de veiligheid.",
+      ],
+      source: "NOS Teletekst, pagina 115 — “AIVD waarschuwt voor extreemrechts”",
+    },
   },
 ];
 
