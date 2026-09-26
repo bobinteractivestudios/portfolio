@@ -6,11 +6,10 @@ import { motion, useAnimationFrame, useMotionValue, type Variants } from "framer
 import styles from "./About.module.css";
 
 const skills = [
-  "Architectonisch ontwerp (villa’s, interieur)",
-  "DJ sessies (house muziek)",
+  "Architectonisch ontwerp (modellen, tekeningen, visualisaties)",
   "Websites",
   "Grafische vormgeving",
-  "Bijles (wiskunde)",
+  "Bijles (o.a. wiskunde)",
 ];
 
 const introLines = [
