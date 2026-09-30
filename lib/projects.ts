@@ -3,6 +3,9 @@ export type ProjectImage = {
   width: number;
   height: number;
   alt: string;
+  // `background-position` for the carousel on a portrait phone, where `cover`
+  // crops a landscape image down to a narrow column. Defaults to the centre.
+  portraitPosition?: string;
 };
 
 export type Project = {
@@ -30,6 +33,8 @@ export const projects: Project[] = [
       width: 2200,
       height: 1500,
       alt: "Opengeslagen editie van De Dissident",
+      // Centres the left-hand page instead of the spine.
+      portraitPosition: "24% center",
     },
     images: [
       {

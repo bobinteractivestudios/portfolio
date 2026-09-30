@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
@@ -15,6 +15,14 @@ const slides = projects.map((project, i) => ({
   label: `[${String(i + 1).padStart(2, "0")}] ${project.kicker.toLowerCase()}: ${project.title}`,
 }));
 const images = slides.map((slide) => slide.image);
+// Read by .slide on portrait phones, see HeroSlideshow.module.css.
+const slideStyles = projects.map(
+  (project) =>
+    ({
+      backgroundImage: `url(${project.hero.src})`,
+      "--portrait-position": project.hero.portraitPosition,
+    }) as CSSProperties
+);
 // Sliding a single slide onto itself looks like a glitch, so autoplay and
 // drag only switch on once there is something to slide to.
 const CAN_SLIDE = slides.length > 1;
@@ -153,7 +161,7 @@ export default function HeroSlideshow() {
             <motion.div
               key={`out-${prevIndex}`}
               className={styles.slide}
-              style={{ backgroundImage: `url(${images[prevIndex as number]})` }}
+              style={slideStyles[prevIndex as number]}
               animate={{
                 scale: [1, 0.86, 0.86, 0.86],
                 x: ["0%", "0%", "-115%", "-115%"],
@@ -163,7 +171,7 @@ export default function HeroSlideshow() {
             <motion.div
               key={`in-${activeIndex}`}
               className={styles.slide}
-              style={{ backgroundImage: `url(${images[activeIndex]})` }}
+              style={slideStyles[activeIndex]}
               animate={{ scale: [0.86, 0.86, 0.86, 1], x: ["115%", "115%", "0%", "0%"] }}
               transition={{ duration: DURATION, times: TIMES, ease: "easeInOut" }}
             />
@@ -174,7 +182,7 @@ export default function HeroSlideshow() {
               <motion.div
                 className={styles.slide}
                 style={{
-                  backgroundImage: `url(${images[(activeIndex + dragDir + images.length) % images.length]})`,
+                  ...slideStyles[(activeIndex + dragDir + images.length) % images.length],
                   x: peekX,
                   scale: peekScale,
                 }}
@@ -183,7 +191,7 @@ export default function HeroSlideshow() {
             <motion.div
               key={`current-${activeIndex}`}
               className={`${styles.slide} ${styles.current} ${CAN_SLIDE ? styles.draggable : ""}`}
-              style={{ backgroundImage: `url(${images[activeIndex]})`, x, scale: currentScale }}
+              style={{ ...slideStyles[activeIndex], x, scale: currentScale }}
               drag={CAN_SLIDE ? "x" : false}
               dragMomentum={false}
               onTap={openActive}

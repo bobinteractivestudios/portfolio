@@ -22,6 +22,15 @@
   will-change: transform;
 }
 
+/* On a portrait phone `cover` leaves only a narrow column of a landscape
+   image; a project can say which part to keep (portraitPosition in
+   lib/projects.ts). */
+@media (orientation: portrait) and (max-width: 600px) {
+  .slide {
+    background-position: var(--portrait-position, center);
+  }
+}
+
 .current {
   cursor: pointer;
 }
