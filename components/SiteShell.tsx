@@ -12,7 +12,13 @@ import MarginContact from "./MarginContact";
 import SmoothScroll from "./SmoothScroll";
 import HeroSlideshow from "./HeroSlideshow";
 import { useMeasure } from "@/lib/useMeasure";
-import { revealProject, scrollPastHero, scrollToTop, scrollToTopThen } from "@/lib/scroll";
+import {
+  revealProject,
+  scrollPastHero,
+  scrollToTop,
+  scrollToTopThen,
+  scrollToTopWithPanel,
+} from "@/lib/scroll";
 import styles from "./SiteShell.module.css";
 
 type Panel = "none" | "nav" | "projects";
@@ -237,7 +243,11 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
                 <div className={styles.topBar}>
                   <Header
                     isOpen={isNavOpen}
-                    onToggle={() => setActivePanel((p) => (p === "nav" ? "none" : "nav"))}
+                    onToggle={() => {
+                      // The logo can be clicked from a slightly scrolled page.
+                      if (!isNavOpen && window.scrollY > 0) scrollToTopWithPanel();
+                      setActivePanel((p) => (p === "nav" ? "none" : "nav"));
+                    }}
                   />
                 </div>
                 <HeroSlideshow hidden={isContentPage} onHidden={onHeroHidden} />

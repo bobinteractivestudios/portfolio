@@ -26,6 +26,20 @@ export function scrollToTop() {
   scrollTo(0);
 }
 
+// Back to the top in step with a panel sliding open (0.5s ease-in-out, the
+// strips' transition in SiteShell.module.css): the nav panel sits at the very
+// top of the page, so opened from a slightly scrolled page it would be cut off.
+export function scrollToTopWithPanel() {
+  if (!lenis) {
+    window.scrollTo(0, 0);
+    return;
+  }
+  lenis.scrollTo(0, {
+    duration: 0.5,
+    easing: (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2),
+  });
+}
+
 // To the About section ("Over"), which starts where the hero ends. The
 // hero's height, not a measured position: a panel that is still sliding shut
 // would be measured along.
