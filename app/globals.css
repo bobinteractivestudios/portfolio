@@ -5,7 +5,8 @@
   --portrait-placeholder: #e5e5e5;
   --page-margin: clamp(20px, 4vw, 56px);
   --header-h: clamp(64px, 7vw, 92px);
-  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  /* A serif (typewriter) mono: Courier on Apple devices, Courier New on Windows. */
+  --font-mono: Courier, "Courier New", monospace;
   color-scheme: light;
 }
 

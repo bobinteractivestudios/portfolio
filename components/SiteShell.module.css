@@ -66,7 +66,8 @@
    glyphs (the bridge between them retracts), then the upper half leans over
    to one side and a copy of itself swings off to the other to form the cross,
    while the lower half splits two flanks off its tip to become the arrow. The resting styles are
-   the finished glyphs; the keyframes only describe where they come from. */
+   the finished glyphs; the keyframes only describe where they come from.
+   The exit (.actionsLeaving, below) runs the same thing backwards. */
 .actions {
   --action-size: 1.625rem;
   --line: 1.25px;
@@ -117,14 +118,19 @@
   opacity: 0.55;
 }
 
-/* Joins the two glyphs' lines into one during the swoop. */
+/* Joins the two glyphs' lines into one during the swoop. An SVG stroke like
+   theirs, in a box laid out like theirs, so all three render at exactly the
+   same weight and position. */
 .bridge {
   position: absolute;
   top: calc(var(--action-size) / 2 + 6px);
-  left: calc(50% - var(--line) / 2);
-  width: var(--line);
+  left: calc(50% - 7px);
+  width: 14px;
   height: calc(var(--action-size) - 12px);
-  background: currentColor;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--line);
   transform: scaleY(0);
 }
 
@@ -215,10 +221,75 @@
   }
 }
 
+/* Exit, on scrolling back up to the hero: the entrance played backwards. The
+   glyphs fold back into their lines, the lines join up and leave the way they
+   came. Separate keyframes, because swapping only the direction of a finished
+   animation does not replay it. */
+.actionsLeaving {
+  opacity: 1;
+  transition: visibility 0s 1.2s;
+}
+
+.actionsLeaving .crossBar {
+  animation: actionsBarOut 0.3s var(--ease) both;
+}
+
+.actionsLeaving .cross {
+  animation: actionsTurnOut 0.3s var(--ease) 0.3s both;
+}
+
+.actionsLeaving .flankLeft,
+.actionsLeaving .flankRight {
+  animation: actionsFlankOut 0.35s var(--ease) 0.25s both;
+}
+
+.actionsLeaving .bridge {
+  animation: actionsJoin 0.25s var(--ease) 0.55s both;
+}
+
+.actionsLeaving .rig {
+  animation: actionsSwoopOut var(--swoop) cubic-bezier(0.7, 0, 0.84, 0) 0.7s both;
+}
+
+@keyframes actionsBarOut {
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes actionsTurnOut {
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes actionsFlankOut {
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes actionsJoin {
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes actionsSwoopOut {
+  to {
+    transform: translateY(calc(-100% - var(--page-margin)));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .actionsVisible .rig,
-  .actionsVisible .rig * {
+  .actions .rig,
+  .actions .rig * {
     animation: none;
+  }
+
+  .actionsLeaving {
+    opacity: 0;
+    transition: none;
   }
 }
 

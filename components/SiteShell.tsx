@@ -32,6 +32,9 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   // the hero (and the header that scrolls away with it) has left the viewport.
   const heroRef = useRef<HTMLDivElement>(null);
   const [pastHero, setPastHero] = useState(false);
+  // Whether they have been on screen on this page, so their exit only plays
+  // when there is something to take away.
+  const [actionsShown, setActionsShown] = useState(false);
   const { scrollY } = useScroll();
   // An open nav panel is part of the page and scrolls away with it. The fixed
   // chrome, pushed down by the panel's height, rides back up with it for as
@@ -40,7 +43,9 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   const navHeight = navSize.height;
   useMotionValueEvent(scrollY, "change", (y) => {
     const hero = heroRef.current;
-    setPastHero(hero ? hero.getBoundingClientRect().bottom <= 0 : false);
+    const past = hero ? hero.getBoundingClientRect().bottom <= 0 : false;
+    setPastHero(past);
+    if (past) setActionsShown(true);
     if (chromeRef.current && isNavOpen) {
       chromeRef.current.style.translate = `0 ${-Math.min(y, navHeight)}px`;
     }
@@ -55,6 +60,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);
     setActivePanel("none");
+    setActionsShown(false);
   }
 
   // Only the content below the hero changes on navigation, and the links pass
@@ -103,13 +109,18 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
         <MarginContact />
         {pathname !== "/" && (
           <div
-            className={`${styles.actions} ${pastHero ? styles.actionsVisible : ""}`}
+            className={
+              `${styles.actions} ` +
+              `${pastHero ? styles.actionsVisible : actionsShown ? styles.actionsLeaving : ""}`
+            }
             aria-hidden={!pastHero}
           >
             {/* Both glyphs are built from one vertical line: see the entrance
                 in SiteShell.module.css. */}
             <div className={styles.rig}>
-              <span className={styles.bridge} />
+              <svg className={styles.bridge} aria-hidden="true">
+                <line x1="7" y1="0" x2="7" y2="100%" />
+              </svg>
               <Link
                 href="/"
                 scroll={false}
