@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Header from "./Header";
 import NavPanel from "./NavPanel";
@@ -81,6 +82,13 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
           onToggle={() => setActivePanel((p) => (p === "projects" ? "none" : "projects"))}
         />
         <MarginContact />
+        {pathname !== "/" && (
+          <Link href="/" scroll={false} className={styles.close} aria-label="Project sluiten">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 3l18 18M21 3L3 21" />
+            </svg>
+          </Link>
+        )}
       </div>
 
       <div

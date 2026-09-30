@@ -200,7 +200,7 @@ export default function HeroSlideshow() {
         href={active.href}
         scroll={false}
         className={
-          `${styles.label} ${isProjectOpen ? `${styles.open} ${styles.title}` : ""} ` +
+          `${styles.label} ${isProjectOpen ? styles.title : ""} ` +
           `${hasNavigated ? styles.instant : ""}`
         }
         onClick={(event) => {
@@ -210,17 +210,6 @@ export default function HeroSlideshow() {
       >
         {isProjectOpen ? active.title : active.label}
       </Link>
-      {isProjectOpen && (
-        <Link
-          href="/"
-          scroll={false}
-          className={`${styles.label} ${styles.open} ${styles.close} ${
-            hasNavigated ? styles.instant : ""
-          }`}
-        >
-          [×] sluiten
-        </Link>
-      )}
     </>
   );
 }
