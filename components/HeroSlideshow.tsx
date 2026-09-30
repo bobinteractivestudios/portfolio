@@ -2,9 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { projects } from "@/lib/projects";
 import styles from "./HeroSlideshow.module.css";
 
-const images = ["/images/hero-1.svg", "/images/hero-2.svg", "/images/hero-3.svg"];
+const images = [
+  ...projects.map((project) => project.hero.src),
+  "/images/hero-1.svg",
+  "/images/hero-2.svg",
+  "/images/hero-3.svg",
+];
 
 const INTERVAL = 4800;
 const DURATION = 1.8;
