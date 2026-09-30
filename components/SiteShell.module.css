@@ -12,8 +12,9 @@
   transition: transform 0.5s ease-in-out;
 }
 
-/* Header, Projecten trigger and contact info: a frame fixed to the viewport
-   that the page scrolls inside of. Follows the strips (see SiteShell.tsx). */
+/* Projecten trigger, contact info and the close cross: a frame fixed to the
+   viewport that the page scrolls inside of. Follows the strips (see
+   SiteShell.tsx). */
 .chrome {
   position: fixed;
   inset: 0;
@@ -23,14 +24,16 @@
   transition: transform 0.5s ease-in-out;
 }
 
+/* The header fills the hero's top margin and scrolls away with it. Above the
+   frame, which overflows into the margin while it zooms out on page load. */
 .topBar {
   position: absolute;
+  z-index: 1;
   top: 0;
   left: 0;
   right: 0;
   padding: 0 var(--page-margin);
   background: var(--bg);
-  pointer-events: auto;
   animation: chromeMarginIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -46,7 +49,8 @@
   }
 }
 
-/* Closes an open project: fills the corner where the top and right margins meet. */
+/* Closes an open project: fills the corner where the top and right margins
+   meet, once the page has scrolled past the hero (.closeVisible). */
 .close {
   position: absolute;
   top: 0;
@@ -56,9 +60,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s;
+}
+
+.closeVisible {
+  opacity: 1;
+  visibility: visible;
   pointer-events: auto;
-  transition: opacity 0.2s ease;
-  animation: closeIn 0.4s ease both;
 }
 
 .close svg {
@@ -69,17 +81,8 @@
   stroke-width: 4.5;
 }
 
-.close:hover {
+.closeVisible:hover {
   opacity: 0.55;
-}
-
-@keyframes closeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 .vStrip {

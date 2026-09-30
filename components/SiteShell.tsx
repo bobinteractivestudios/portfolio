@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useMotionValueEvent, useScroll } from "framer-motion";
 import Header from "./Header";
 import NavPanel from "./NavPanel";
 import ProjectsPanel from "./ProjectsPanel";
@@ -23,6 +24,15 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   const [navRef, navSize] = useMeasure<HTMLElement>();
   const [projectsRef, projectsSize] = useMeasure<HTMLElement>();
   const [ready, setReady] = useState(false);
+
+  // The close cross of an open project only shows once the hero (and the
+  // header that scrolls away with it) has left the viewport.
+  const heroRef = useRef<HTMLDivElement>(null);
+  const [pastHero, setPastHero] = useState(false);
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (y) => {
+    setPastHero(y >= (heroRef.current?.offsetHeight ?? Infinity));
+  });
 
   const isNavOpen = activePanel === "nav";
   const isProjectsOpen = activePanel === "projects";
@@ -61,7 +71,8 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
       {/* The margin chrome can't live inside the strips: their transform would
           make `position: fixed` relative to the strip instead of the viewport.
           It sits in its own fixed layer and gets the same offset and
-          transition as the strips, so it still moves as one sheet with them. */}
+          transition as the strips, so it still moves as one sheet with them.
+          The header is not part of it: it scrolls away with the hero. */}
       <div
         className={styles.chrome}
         style={{
@@ -71,21 +82,20 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
           visibility: ready ? "visible" : "hidden",
         }}
       >
-        <div className={styles.topBar}>
-          <Header
-            isOpen={isNavOpen}
-            onToggle={() => setActivePanel((p) => (p === "nav" ? "none" : "nav"))}
-            // An open project has its close cross in this corner instead.
-            showSocial={pathname === "/"}
-          />
-        </div>
         <ProjectsTrigger
           isOpen={isProjectsOpen}
           onToggle={() => setActivePanel((p) => (p === "projects" ? "none" : "projects"))}
         />
         <MarginContact />
         {pathname !== "/" && (
-          <Link href="/" scroll={false} className={styles.close} aria-label="Project sluiten">
+          <Link
+            href="/"
+            scroll={false}
+            className={`${styles.close} ${pastHero ? styles.closeVisible : ""}`}
+            aria-label="Project sluiten"
+            aria-hidden={!pastHero}
+            tabIndex={pastHero ? 0 : -1}
+          >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M3 3l18 18M21 3L3 21" />
             </svg>
@@ -120,7 +130,14 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
 
           <div className={styles.page}>
             <main>
-              <div id="hero-screen" className={styles.heroScreen}>
+              <div id="hero-screen" className={styles.heroScreen} ref={heroRef}>
+                <div className={styles.topBar}>
+                  <Header
+                    isOpen={isNavOpen}
+                    onToggle={() => setActivePanel((p) => (p === "nav" ? "none" : "nav"))}
+                    showSocial={pathname === "/"}
+                  />
+                </div>
                 <HeroSlideshow />
               </div>
               {children}
