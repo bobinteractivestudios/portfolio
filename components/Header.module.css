@@ -20,15 +20,20 @@
   opacity: 0.65;
 }
 
+/* Set like a glyph of the logo: same font-size, as tall as its capitals
+   (0.7em in Maison Neue Bold) and standing on its baseline, which sits 0.24em
+   above the bottom of the logo's line-height: 1 box. */
 .social {
   display: flex;
+  font-size: clamp(1.05rem, 1.7vw, 1.5rem);
   color: var(--fg);
   transition: opacity 0.2s ease;
 }
 
 .social svg {
-  width: clamp(1.1rem, 1.7vw, 1.5rem);
-  height: clamp(1.1rem, 1.7vw, 1.5rem);
+  width: 0.7em;
+  height: 0.7em;
+  margin-bottom: 0.24em;
 }
 
 .social:hover {

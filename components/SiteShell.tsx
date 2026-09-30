@@ -75,6 +75,8 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
           <Header
             isOpen={isNavOpen}
             onToggle={() => setActivePanel((p) => (p === "nav" ? "none" : "nav"))}
+            // An open project has its close cross in this corner instead.
+            showSocial={pathname === "/"}
           />
         </div>
         <ProjectsTrigger
