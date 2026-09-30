@@ -81,9 +81,9 @@
 
    Entrance: one vertical line swoops in from the top and parts in the middle,
    each half drawing back to its glyph's own line (the "stem"). The upper stem
-   then leans over to one side and a copy of it swings off to the other to form
-   the cross, while the lower one splits two flanks off its tip to become the
-   arrow. The resting styles are the finished glyphs; the keyframes only
+   then opens like scissors into the cross, it and a copy of it turning 45° to
+   either side at the same time, while the lower one splits two flanks off its
+   tip to become the arrow. The resting styles are the finished glyphs; the keyframes only
    describe where they come from. The exit (.actionsLeaving, below) runs it
    backwards.
 
@@ -101,6 +101,7 @@
   --part: calc(var(--swoop) - 0.1s);
   --parting: 0.25s;
   --form: calc(var(--part) + var(--parting));
+  --forming: 0.35s;
   --ease: cubic-bezier(0.65, 0, 0.35, 1);
   /* Where a stem starts inside its action, and so half the gap between two. */
   --stem-inset: calc(var(--action-size) / 2 - 6px);
@@ -192,6 +193,8 @@
   transform: rotate(45deg);
 }
 
+/* Inside the turned .cross, so -90° here is 45° the other way on screen: run
+   together with the same timing, the two lines open symmetrically. */
 .crossBar {
   transform: rotate(-90deg);
 }
@@ -230,16 +233,16 @@
 }
 
 .actionsVisible .cross {
-  animation: actionsTurn 0.3s var(--ease) var(--form) both;
+  animation: actionsTurn var(--forming) var(--ease) var(--form) both;
 }
 
 .actionsVisible .crossBar {
-  animation: actionsBar 0.3s var(--ease) calc(var(--form) + 0.3s) both;
+  animation: actionsBar var(--forming) var(--ease) var(--form) both;
 }
 
 .actionsVisible .flankLeft,
 .actionsVisible .flankRight {
-  animation: actionsFlank 0.35s var(--ease) var(--form) both;
+  animation: actionsFlank var(--forming) var(--ease) var(--form) both;
 }
 
 @keyframes actionsSwoop {
@@ -289,7 +292,7 @@
   }
 }
 
-/* Lying on the cross's stem until it swings off it. */
+/* Lying on the cross's stem until the two turn apart. */
 @keyframes actionsBar {
   from {
     opacity: 0;
@@ -313,30 +316,31 @@
 
 /* Exit, on scrolling back up to the hero: the entrance played backwards. The
    glyphs fold back into their stems, the stems join up and the line leaves the
-   way it came. Separate keyframes, because swapping only the direction of a
-   finished animation does not replay it. */
+   way it came. Every animation here needs a name the entrance does not use on
+   that element: an element that keeps its animation-name keeps its old,
+   long-finished animation instead of starting a new one. */
 .actionsLeaving {
-  --join: 0.6s;
+  --join: var(--forming);
   --leave: calc(var(--join) + var(--parting));
   opacity: 1;
   transition: visibility 0s calc(var(--leave) + var(--swoop));
 }
 
 .actionsLeaving .crossBar {
-  animation: actionsBarOut 0.3s var(--ease) both;
+  animation: actionsBarOut var(--forming) var(--ease) both;
 }
 
 .actionsLeaving .cross {
-  animation: actionsTurnOut 0.3s var(--ease) 0.3s both;
+  animation: actionsTurnOut var(--forming) var(--ease) both;
 }
 
 .actionsLeaving .flankLeft,
 .actionsLeaving .flankRight {
-  animation: actionsFlankOut 0.35s var(--ease) 0.25s both;
+  animation: actionsFlankOut var(--forming) var(--ease) both;
 }
 
 .actionsLeaving .stem {
-  animation: actionsUndrawn 1s linear var(--join) forwards;
+  animation: actionsUndrawnOut 1s linear var(--join) forwards;
 }
 
 .actionsLeaving .halfTop {
@@ -348,11 +352,25 @@
 }
 
 .actionsLeaving .whole {
-  animation: actionsDrawn 1s linear var(--leave) forwards;
+  animation: actionsDrawnOut 1s linear var(--leave) forwards;
 }
 
 .actionsLeaving .rig {
   animation: actionsSwoopOut var(--swoop) cubic-bezier(0.7, 0, 0.84, 0) var(--leave) both;
+}
+
+@keyframes actionsDrawnOut {
+  from,
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes actionsUndrawnOut {
+  from,
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes actionsBarOut {
