@@ -103,9 +103,13 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (lastPathname.current === pathname) return;
     const isFirstLoad = lastPathname.current === null;
+    const wasContentPage =
+      !isFirstLoad && lastPathname.current !== "/" && !lastPathname.current!.startsWith("/projecten/");
     lastPathname.current = pathname;
     if (isFirstLoad) return;
-    if (isHome && window.location.hash === "#about") scrollPastHero();
+    // From the blog or the programme the hero was not on the page: it is put
+    // back above the fold unseen, rather than brought in and scrolled past.
+    if (isHome && window.location.hash === "#about") scrollPastHero(wasContentPage);
     else if (!isHome || !window.location.hash) scrollToTop();
   }, [pathname, isHome]);
 

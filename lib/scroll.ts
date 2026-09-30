@@ -43,9 +43,17 @@ export function scrollToTopWithPanel() {
 // To the About section ("Over"), which starts where the hero ends. The
 // hero's height, not a measured position: a panel that is still sliding shut
 // would be measured along.
-export function scrollPastHero() {
+// `immediate` lands there without travelling: for arriving from a page that
+// had no hero to scroll past.
+export function scrollPastHero(immediate = false) {
   const hero = document.getElementById("hero-screen");
-  if (hero) scrollTo(hero.offsetHeight);
+  if (!hero) return;
+  if (!immediate) scrollTo(hero.offsetHeight);
+  else if (lenis) {
+    // The page has just grown; Lenis would clamp to the old one's length.
+    lenis.resize();
+    lenis.scrollTo(hero.offsetHeight, { immediate: true });
+  } else window.scrollTo(0, hero.offsetHeight);
 }
 
 // Leaving a project: its hero grows back into the carousel, which has to be
