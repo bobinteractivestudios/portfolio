@@ -1,16 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { projects } from "@/lib/projects";
 import styles from "./HeroSlideshow.module.css";
 
-const images = [
-  ...projects.map((project) => project.hero.src),
-  "/images/hero-1.svg",
-  "/images/hero-2.svg",
-  "/images/hero-3.svg",
-];
+const slides = projects.map((project, i) => ({
+  image: project.hero.src,
+  href: `/projecten/${project.slug}`,
+  label: `[${String(i + 1).padStart(2, "0")}] ${project.kicker.toLowerCase()}: ${project.title}`,
+}));
+const images = slides.map((slide) => slide.image);
+// Sliding a single slide onto itself looks like a glitch, so autoplay and
+// drag only switch on once there is something to slide to.
+const CAN_SLIDE = slides.length > 1;
 
 const INTERVAL = 4800;
 const DURATION = 1.8;
@@ -30,6 +35,7 @@ export default function HeroSlideshow() {
   const frameRef = useRef<HTMLDivElement>(null);
   const widthRef = useRef(1);
   const x = useMotionValue(0);
+  const router = useRouter();
 
   const peekX = useTransform(x, (v) => (v < 0 ? widthRef.current + v : -widthRef.current + v));
 
@@ -43,7 +49,7 @@ export default function HeroSlideshow() {
   const transitioning = prevIndex !== null;
 
   useEffect(() => {
-    if (isDragging) return;
+    if (isDragging || !CAN_SLIDE) return;
     const id = setInterval(() => {
       setPrevIndex(activeIndex);
       setActiveIndex((current) => (current + 1) % images.length);
@@ -92,52 +98,60 @@ export default function HeroSlideshow() {
     }
   }
 
+  const active = slides[activeIndex];
+
   return (
-    <div className={styles.frame} ref={frameRef}>
-      {transitioning ? (
-        <>
-          <motion.div
-            key={`out-${prevIndex}`}
-            className={styles.slide}
-            style={{ backgroundImage: `url(${images[prevIndex as number]})` }}
-            animate={{
-              scale: [1, 0.86, 0.86, 0.86],
-              x: ["0%", "0%", "-115%", "-115%"],
-            }}
-            transition={{ duration: DURATION, times: TIMES, ease: "easeInOut" }}
-          />
-          <motion.div
-            key={`in-${activeIndex}`}
-            className={styles.slide}
-            style={{ backgroundImage: `url(${images[activeIndex]})` }}
-            animate={{ scale: [0.86, 0.86, 0.86, 1], x: ["115%", "115%", "0%", "0%"] }}
-            transition={{ duration: DURATION, times: TIMES, ease: "easeInOut" }}
-          />
-        </>
-      ) : (
-        <>
-          {isDragging && (
+    <>
+      <div className={styles.frame} ref={frameRef}>
+        {transitioning ? (
+          <>
             <motion.div
+              key={`out-${prevIndex}`}
               className={styles.slide}
-              style={{
-                backgroundImage: `url(${images[(activeIndex + dragDir + images.length) % images.length]})`,
-                x: peekX,
-                scale: peekScale,
+              style={{ backgroundImage: `url(${images[prevIndex as number]})` }}
+              animate={{
+                scale: [1, 0.86, 0.86, 0.86],
+                x: ["0%", "0%", "-115%", "-115%"],
               }}
+              transition={{ duration: DURATION, times: TIMES, ease: "easeInOut" }}
             />
-          )}
-          <motion.div
-            key={`current-${activeIndex}`}
-            className={styles.slide}
-            style={{ backgroundImage: `url(${images[activeIndex]})`, x, scale: currentScale }}
-            drag="x"
-            dragMomentum={false}
-            onDragStart={handleDragStart}
-            onDrag={handleDrag}
-            onDragEnd={handleDragEnd}
-          />
-        </>
-      )}
-    </div>
+            <motion.div
+              key={`in-${activeIndex}`}
+              className={styles.slide}
+              style={{ backgroundImage: `url(${images[activeIndex]})` }}
+              animate={{ scale: [0.86, 0.86, 0.86, 1], x: ["115%", "115%", "0%", "0%"] }}
+              transition={{ duration: DURATION, times: TIMES, ease: "easeInOut" }}
+            />
+          </>
+        ) : (
+          <>
+            {isDragging && (
+              <motion.div
+                className={styles.slide}
+                style={{
+                  backgroundImage: `url(${images[(activeIndex + dragDir + images.length) % images.length]})`,
+                  x: peekX,
+                  scale: peekScale,
+                }}
+              />
+            )}
+            <motion.div
+              key={`current-${activeIndex}`}
+              className={`${styles.slide} ${styles.current} ${CAN_SLIDE ? styles.draggable : ""}`}
+              style={{ backgroundImage: `url(${images[activeIndex]})`, x, scale: currentScale }}
+              drag={CAN_SLIDE ? "x" : false}
+              dragMomentum={false}
+              onTap={() => router.push(active.href)}
+              onDragStart={handleDragStart}
+              onDrag={handleDrag}
+              onDragEnd={handleDragEnd}
+            />
+          </>
+        )}
+      </div>
+      <Link href={active.href} className={styles.label}>
+        {active.label}
+      </Link>
+    </>
   );
 }

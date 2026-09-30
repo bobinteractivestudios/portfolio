@@ -22,10 +22,40 @@
   will-change: transform;
 }
 
-.frame > .slide:last-child {
-  cursor: grab;
+.current {
+  cursor: pointer;
 }
 
-.frame > .slide:last-child:active {
+.draggable:active {
   cursor: grabbing;
+}
+
+/* Sits in the bottom page margin, under the frame's left corner. Fades in
+   late so it doesn't overlap the image while heroMarginIn opens the margin. */
+.label {
+  position: absolute;
+  left: var(--page-margin);
+  bottom: 0;
+  height: var(--page-margin);
+  display: flex;
+  align-items: center;
+  font-size: clamp(0.62rem, 1vw, 0.75rem);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  color: rgba(var(--fg-rgb), 0.5);
+  transition: color 0.2s ease;
+  animation: labelIn 0.4s ease 1s both;
+}
+
+.label:hover {
+  color: var(--fg);
+}
+
+@keyframes labelIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
