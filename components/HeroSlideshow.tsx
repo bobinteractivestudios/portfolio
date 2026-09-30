@@ -16,14 +16,20 @@ const slides = projects.map((project, i) => ({
   label: `[${String(i + 1).padStart(2, "0")}] ${project.kicker.toLowerCase()}: ${project.title}`,
 }));
 const images = slides.map((slide) => slide.image);
-// Read by .slide on portrait phones, see HeroSlideshow.module.css.
-const slideStyles = projects.map(
-  (project) =>
-    ({
-      backgroundImage: `url(${project.hero.src})`,
-      "--portrait-position": project.hero.portraitPosition,
-    }) as CSSProperties
-);
+// The custom properties are read by .slide, see HeroSlideshow.module.css. A
+// hero on a backdrop gets a second layer over the photo, the same size, that
+// fades its bottom edge into the backdrop: a shadow running off the bottom of
+// the photo would otherwise end in a hard line.
+const slideStyles = projects.map(({ hero }) => {
+  const photo = `url(${hero.src})`;
+  const fade = hero.backdrop && `linear-gradient(transparent 88%, ${hero.backdrop.color})`;
+  return {
+    backgroundImage: fade ? `${fade}, ${photo}` : photo,
+    "--portrait-position": hero.portraitPosition,
+    "--backdrop": hero.backdrop?.color,
+    "--landscape-size": hero.backdrop?.size,
+  } as CSSProperties;
+});
 // Sliding a single slide onto itself looks like a glitch, so autoplay and
 // drag only switch on once there is something to slide to.
 const CAN_SLIDE = slides.length > 1;

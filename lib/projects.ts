@@ -6,6 +6,10 @@ export type ProjectImage = {
   // `background-position` for the carousel on a portrait phone, where `cover`
   // crops a landscape image down to a narrow column. Defaults to the centre.
   portraitPosition?: string;
+  // Shown smaller than the frame on landscape screens instead of cropped to
+  // fill it (`size` is its background-size there), on a backdrop of the
+  // photo's own background colour so the frame still reads as one image.
+  backdrop?: { color: string; size: string };
 };
 
 export type Project = {
@@ -35,6 +39,8 @@ export const projects: Project[] = [
       alt: "Opengeslagen editie van De Dissident",
       // Centres the left-hand page instead of the spine.
       portraitPosition: "24% center",
+      // Its full height and some air above and below, on the photo's grey.
+      backdrop: { color: "#dedede", size: "auto 90%" },
     },
     images: [
       {
