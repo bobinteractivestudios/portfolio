@@ -31,7 +31,20 @@ export const projects: Project[] = [
       height: 1500,
       alt: "Opengeslagen editie van De Dissident",
     },
-    images: [],
+    images: [
+      {
+        src: "/images/projects/de-dissident/36.png",
+        width: 2200,
+        height: 1400,
+        alt: "Spread ‘Post-futurisme’ uit De Dissident",
+      },
+      {
+        src: "/images/projects/de-dissident/34.png",
+        width: 2200,
+        height: 1500,
+        alt: "Spread ‘Het langhuis in de badkamer’ en woordzoeker uit De Dissident",
+      },
+    ],
   },
 ];
 
