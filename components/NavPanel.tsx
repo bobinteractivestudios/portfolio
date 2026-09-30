@@ -2,14 +2,28 @@
 
 import { forwardRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { motion, useScroll } from "framer-motion";
 import styles from "./NavPanel.module.css";
 
 const NavPanel = forwardRef<HTMLElement, { isOpen: boolean }>(function NavPanel(
   { isOpen },
   ref
 ) {
+  const isHome = usePathname() === "/";
+  // The panel sits at the top of the document; riding along with the scroll
+  // position keeps it just above the viewport, so it still slides in from the
+  // top edge when the header is used on a scrolled page.
+  const { scrollY } = useScroll();
+
   return (
-    <nav ref={ref} id="site-nav" className={styles.panel} aria-hidden={!isOpen}>
+    <motion.nav
+      ref={ref}
+      id="site-nav"
+      className={styles.panel}
+      aria-hidden={!isOpen}
+      style={{ y: scrollY }}
+    >
       <div className={styles.inner}>
         <ul className={styles.list}>
           <li className={styles.item}>
@@ -23,13 +37,19 @@ const NavPanel = forwardRef<HTMLElement, { isOpen: boolean }>(function NavPanel(
             </Link>
           </li>
           <li className={styles.item}>
-            <a href="#about" tabIndex={isOpen ? 0 : -1}>
-              Contact
-            </a>
+            {isHome ? (
+              <a href="#about" tabIndex={isOpen ? 0 : -1}>
+                Contact
+              </a>
+            ) : (
+              <Link href="/#about" tabIndex={isOpen ? 0 : -1}>
+                Contact
+              </Link>
+            )}
           </li>
         </ul>
       </div>
-    </nav>
+    </motion.nav>
   );
 });
 

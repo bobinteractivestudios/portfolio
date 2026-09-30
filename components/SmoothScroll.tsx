@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Lenis from "lenis";
+import { registerLenis } from "@/lib/scroll";
 
 export default function SmoothScroll() {
   useEffect(() => {
@@ -12,6 +13,7 @@ export default function SmoothScroll() {
       smoothWheel: true,
       anchors: true,
     });
+    registerLenis(lenis);
 
     let rafId: number;
     function raf(time: number) {
@@ -22,6 +24,7 @@ export default function SmoothScroll() {
 
     return () => {
       cancelAnimationFrame(rafId);
+      registerLenis(null);
       lenis.destroy();
     };
   }, []);

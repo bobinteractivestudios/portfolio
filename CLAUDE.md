@@ -21,7 +21,7 @@ There is no test suite configured in this repo.
 
 ## Architecture
 
-Single-page portfolio built with Next.js App Router, React 19, TypeScript, and CSS Modules (no Tailwind/UI kit). `app/page.tsx` renders `<SiteShell><HeroSlideshow /></SiteShell>` — everything else lives in `components/`.
+Single-page portfolio built with Next.js App Router, React 19, TypeScript, and CSS Modules (no Tailwind/UI kit). `app/(site)/layout.tsx` wraps the home page and `/projecten/[slug]` in `<SiteShell>`, which renders the hero carousel itself and the route's page below it — everything else lives in `components/`. `/blog` and `/program` sit outside that group with their own standalone layouts.
 
 ### The filmstrip navigation pattern (`SiteShell.tsx`)
 
@@ -34,6 +34,14 @@ Structure (outer to inner):
 - `activePanel` (`"none" | "nav" | "projects"`) in `SiteShell` is the only state; the two panels are mutually exclusive.
 
 **SSR flash guard**: `navSize`/`projectsSize` start at `0` until `useMeasure`'s `ResizeObserver` fires client-side, so the very first server-rendered HTML would briefly compute `translateX(-0px)` — i.e. render as "open". `.hStrip` has `visibility: hidden` as an unconditional CSS default (true from the first byte of HTML, verified via `curl`), and `SiteShell` only flips it to `visible` after a mount-time `useEffect` confirms the transform is correct. Don't replace this with a JS-computed fallback value (a large offscreen number was tried — it breaks page positioning during the unmeasured window); the CSS-default-hidden approach is the one that actually works because it doesn't depend on JS having run yet.
+
+### Single-page project navigation
+
+`/` and `/projecten/[slug]` share `SiteShell` as their layout, so opening a project never remounts the shell: the hero carousel stays put (it *is* the project's hero image) and only the content below it swaps — `About` on the home page, the project's intro + gallery (`#project-content`) on a project page. Projects live in `lib/projects.ts`, which drives the carousel slides, the Projecten panel and the pages.
+
+- Every link between these routes passes `scroll: false`; `SiteShell` owns the scroll position instead (`lib/scroll.ts`): on a pathname change it nudges the page so the project intro rises into the lower half of the screen (`revealProject`), or scrolls back to the top when returning home. Give Lenis a numeric target, not the element — see the comment in `lib/scroll.ts`.
+- `HeroSlideshow` derives the open project from `usePathname()`: while a project is open it holds that slide (no autoplay), swiping navigates to the neighbouring project, and a `[×] sluiten` link returns home.
+- **Fixed margin chrome**: `Header`, `ProjectsTrigger` and `MarginContact` live in `.chrome`, a `position: fixed` layer *outside* the strips (a transformed ancestor would make `fixed` relative to the strip). It gets the same translate + transition as the strips so it still moves with them as one sheet. Because the chrome is usable on a scrolled page, the panels follow the scroll position (`useScroll` → `y`): the `NavPanel` so it stays just above the viewport, the `ProjectsPanel` list so it is in view.
 
 ### Margin system
 

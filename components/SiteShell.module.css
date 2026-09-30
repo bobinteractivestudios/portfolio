@@ -10,6 +10,40 @@
   transition: transform 0.5s ease-in-out;
 }
 
+/* Header, Projecten trigger and contact info: a frame fixed to the viewport
+   that the page scrolls inside of. Follows the strips (see SiteShell.tsx). */
+.chrome {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.5s ease-in-out;
+}
+
+.topBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 0 var(--page-margin);
+  background: var(--bg);
+  pointer-events: auto;
+  animation: chromeMarginIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Keeps the logo on the hero's edge while heroMarginIn opens the side margins. */
+@keyframes chromeMarginIn {
+  0% {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  100% {
+    padding-left: var(--page-margin);
+    padding-right: var(--page-margin);
+  }
+}
+
 .vStrip {
   display: flex;
   flex-direction: column;
@@ -28,7 +62,7 @@
   flex-direction: column;
   min-height: 100vh;
   min-height: 100dvh;
-  padding: 0 var(--page-margin) var(--page-margin);
+  padding: var(--page-margin);
   background: var(--bg);
   animation: heroMarginIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }

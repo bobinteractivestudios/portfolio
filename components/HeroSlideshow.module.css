@@ -47,6 +47,12 @@
   animation: labelIn 0.4s ease 1s both;
 }
 
+.close {
+  left: auto;
+  right: var(--page-margin);
+  animation: labelIn 0.4s ease both;
+}
+
 .label:hover {
   color: var(--fg);
 }

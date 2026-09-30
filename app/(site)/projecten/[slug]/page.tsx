@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import Footer from "@/components/Footer";
 import { projects, getProject } from "@/lib/projects";
 import styles from "@/components/Project.module.css";
 
@@ -22,25 +23,25 @@ export async function generateMetadata({
   };
 }
 
+// Rendered by SiteShell below the hero: the carousel slide is this page's
+// hero image, so only the intro and the rest of the gallery live here.
 export default async function ProjectPage({ params }: PageProps<"/projecten/[slug]">) {
   const { slug } = await params;
   const project = getProject(slug);
   if (!project) notFound();
 
   return (
-    <article>
-      <header className={styles.hero}>
-        <span className={styles.kicker}>{project.kicker}</span>
-        <h1 className={styles.title}>{project.title}</h1>
-        <div className={styles.description}>
-          {project.description.map((paragraph, i) => (
-            <p key={i}>{paragraph}</p>
-          ))}
-        </div>
-      </header>
+    <article id="project-content" key={project.slug} className={styles.project}>
+      <h1 className={styles.srOnly}>{project.title}</h1>
+
+      <div className={styles.intro}>
+        {project.description.map((paragraph, i) => (
+          <p key={i}>{paragraph}</p>
+        ))}
+      </div>
 
       <div className={styles.images}>
-        {[project.hero, ...project.images].map((image, i) => (
+        {project.images.map((image) => (
           <Image
             key={image.src}
             src={image.src}
@@ -49,10 +50,11 @@ export default async function ProjectPage({ params }: PageProps<"/projecten/[slu
             height={image.height}
             sizes="100vw"
             className={styles.image}
-            priority={i === 0}
           />
         ))}
       </div>
+
+      <Footer />
     </article>
   );
 }

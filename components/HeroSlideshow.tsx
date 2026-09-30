@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { projects } from "@/lib/projects";
+import { revealProject } from "@/lib/scroll";
 import styles from "./HeroSlideshow.module.css";
 
 const slides = projects.map((project, i) => ({
@@ -36,6 +37,20 @@ export default function HeroSlideshow() {
   const widthRef = useRef(1);
   const x = useMotionValue(0);
   const router = useRouter();
+  const pathname = usePathname();
+
+  // On /projecten/[slug] the carousel is that project's hero: it shows the
+  // project's slide and holds it (no autoplay). -1 on the home page.
+  const routeIndex = slides.findIndex((slide) => slide.href === pathname);
+  const isProjectOpen = routeIndex !== -1;
+  const [lastRouteIndex, setLastRouteIndex] = useState(routeIndex);
+  if (routeIndex !== lastRouteIndex) {
+    setLastRouteIndex(routeIndex);
+    if (isProjectOpen) {
+      setActiveIndex(routeIndex);
+      setPrevIndex(null);
+    }
+  }
 
   const peekX = useTransform(x, (v) => (v < 0 ? widthRef.current + v : -widthRef.current + v));
 
@@ -49,13 +64,13 @@ export default function HeroSlideshow() {
   const transitioning = prevIndex !== null;
 
   useEffect(() => {
-    if (isDragging || !CAN_SLIDE) return;
+    if (isDragging || !CAN_SLIDE || isProjectOpen) return;
     const id = setInterval(() => {
       setPrevIndex(activeIndex);
       setActiveIndex((current) => (current + 1) % images.length);
     }, INTERVAL);
     return () => clearInterval(id);
-  }, [activeIndex, isDragging]);
+  }, [activeIndex, isDragging, isProjectOpen]);
 
   useEffect(() => {
     if (prevIndex === null) return;
@@ -64,7 +79,18 @@ export default function HeroSlideshow() {
   }, [prevIndex]);
 
   function goTo(dir: 1 | -1) {
-    setActiveIndex((current) => (current + dir + images.length) % images.length);
+    const next = (activeIndex + dir + slides.length) % slides.length;
+    setActiveIndex(next);
+    // Swiping the hero of an open project opens the neighbouring project.
+    if (isProjectOpen) router.push(slides[next].href, { scroll: false });
+  }
+
+  // The hero stays put and the project loads below it (see SiteShell), so
+  // opening is a navigation without Next's own scroll handling.
+  function openActive() {
+    const { href } = slides[activeIndex];
+    if (pathname === href) revealProject();
+    else router.push(href, { scroll: false });
   }
 
   function handleDragStart() {
@@ -141,7 +167,7 @@ export default function HeroSlideshow() {
               style={{ backgroundImage: `url(${images[activeIndex]})`, x, scale: currentScale }}
               drag={CAN_SLIDE ? "x" : false}
               dragMomentum={false}
-              onTap={() => router.push(active.href)}
+              onTap={openActive}
               onDragStart={handleDragStart}
               onDrag={handleDrag}
               onDragEnd={handleDragEnd}
@@ -149,9 +175,22 @@ export default function HeroSlideshow() {
           </>
         )}
       </div>
-      <Link href={active.href} className={styles.label}>
+      <Link
+        href={active.href}
+        scroll={false}
+        className={styles.label}
+        onClick={(event) => {
+          event.preventDefault();
+          openActive();
+        }}
+      >
         {active.label}
       </Link>
+      {isProjectOpen && (
+        <Link href="/" scroll={false} className={`${styles.label} ${styles.close}`}>
+          [×] sluiten
+        </Link>
+      )}
     </>
   );
 }
