@@ -25,8 +25,8 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   const [projectsRef, projectsSize] = useMeasure<HTMLElement>();
   const [ready, setReady] = useState(false);
 
-  // The close cross of an open project only shows once the hero (and the
-  // header that scrolls away with it) has left the viewport.
+  // The close cross and back-to-top arrow of an open project only show once
+  // the hero (and the header that scrolls away with it) has left the viewport.
   const heroRef = useRef<HTMLDivElement>(null);
   const [pastHero, setPastHero] = useState(false);
   const { scrollY } = useScroll();
@@ -88,18 +88,33 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
         />
         <MarginContact />
         {pathname !== "/" && (
-          <Link
-            href="/"
-            scroll={false}
-            className={`${styles.close} ${pastHero ? styles.closeVisible : ""}`}
-            aria-label="Project sluiten"
+          <div
+            className={`${styles.actions} ${pastHero ? styles.actionsVisible : ""}`}
             aria-hidden={!pastHero}
-            tabIndex={pastHero ? 0 : -1}
           >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3 3l18 18M21 3L3 21" />
-            </svg>
-          </Link>
+            <Link
+              href="/"
+              scroll={false}
+              className={styles.action}
+              aria-label="Project sluiten"
+              tabIndex={pastHero ? 0 : -1}
+            >
+              <svg viewBox="0 0 10 10" aria-hidden="true">
+                <path d="M0.5 0.5l9 9M9.5 0.5l-9 9" />
+              </svg>
+            </Link>
+            <button
+              type="button"
+              className={styles.action}
+              onClick={scrollToTop}
+              aria-label="Terug naar boven"
+              tabIndex={pastHero ? 0 : -1}
+            >
+              <svg viewBox="0 0 10 10" aria-hidden="true">
+                <path d="M5 10V0.5M0.5 5L5 0.5 9.5 5" />
+              </svg>
+            </button>
+          </div>
         )}
       </div>
 
@@ -135,7 +150,6 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
                   <Header
                     isOpen={isNavOpen}
                     onToggle={() => setActivePanel((p) => (p === "nav" ? "none" : "nav"))}
-                    showSocial={pathname === "/"}
                   />
                 </div>
                 <HeroSlideshow />
