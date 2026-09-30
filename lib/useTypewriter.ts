@@ -5,12 +5,8 @@ import { useEffect, useRef, useState } from "react";
 const NOISE = "abcdefghijklmnopqrstuvwxyz0123456789[]:/#%&*<>_-+=";
 // How often the unsettled characters are re-rolled, in ms.
 const NOISE_INTERVAL = 40;
-// A character is typed after a random pause of up to this, in ms. Deleting
-// is much quicker: an exit should be out of the way.
-const MAX_PAUSE = 100;
-const MAX_DELETE_PAUSE = 25;
-// While typing, this many characters behind the cursor are still noise.
-const HEAD = 3;
+// A character is added or removed after a random pause of up to this, in ms.
+const MAX_PAUSE = 25;
 
 // Spaces stay spaces, so the noise keeps the shape of the words.
 const noise = (text: string) =>
@@ -18,11 +14,12 @@ const noise = (text: string) =>
     ""
   );
 
-// Types `target` out one character at a time, each after a random pause, with
-// the characters at the cursor flickering through random ones before they
-// settle. When `target` changes, what is showing is deleted the same way
-// first, every character scrambling while the text shrinks; an empty `target`
-// just deletes. `startDelay` (ms) holds back the very first run only.
+// Types `target` out as noise: the text grows one character at a time, each
+// after a random pause, every character flickering through random ones, and
+// resolves into `target` once it has its full length. When `target` changes,
+// what is showing is first deleted by the same thing in reverse: it turns to
+// noise and shrinks one character at a time. An empty `target` just deletes.
+// `startDelay` (ms) holds back the very first run only.
 export function useTypewriter(target: string, startDelay = 0) {
   const [shown, setShown] = useState("");
   // The text being typed or deleted, and how many of its characters show.
@@ -37,9 +34,7 @@ export function useTypewriter(target: string, startDelay = 0) {
     let noiseTimer: ReturnType<typeof setInterval>;
 
     const render = () => {
-      const visible = s.text.slice(0, s.count);
-      const settled = s.text === target ? Math.max(0, s.count - HEAD) : 0;
-      setShown(visible.slice(0, settled) + noise(visible.slice(settled)));
+      setShown(noise(s.text.slice(0, s.count)));
     };
 
     const finish = () => {
@@ -61,8 +56,7 @@ export function useTypewriter(target: string, startDelay = 0) {
         return;
       }
       render();
-      const maxPause = s.text === target ? MAX_PAUSE : MAX_DELETE_PAUSE;
-      stepTimer = setTimeout(step, Math.random() * maxPause);
+      stepTimer = setTimeout(step, Math.random() * MAX_PAUSE);
     };
 
     stepTimer = setTimeout(
