@@ -16,23 +16,23 @@ const NavPanel = forwardRef<HTMLElement, { isOpen: boolean }>(function NavPanel(
       <div className={styles.inner}>
         <ul className={styles.list}>
           <li className={styles.item}>
-            <a href="/program" tabIndex={isOpen ? 0 : -1}>
+            <Link href="/program" scroll={false} tabIndex={isOpen ? 0 : -1}>
               Programma
-            </a>
+            </Link>
           </li>
           <li className={styles.item}>
-            <Link href="/blog" tabIndex={isOpen ? 0 : -1}>
+            <Link href="/blog" scroll={false} tabIndex={isOpen ? 0 : -1}>
               Blog
             </Link>
           </li>
           <li className={styles.item}>
             {isHome ? (
               <a href="#about" tabIndex={isOpen ? 0 : -1}>
-                Contact
+                Over
               </a>
             ) : (
-              <Link href="/#about" tabIndex={isOpen ? 0 : -1}>
-                Contact
+              <Link href="/#about" scroll={false} tabIndex={isOpen ? 0 : -1}>
+                Over
               </Link>
             )}
           </li>

@@ -26,6 +26,14 @@ export function scrollToTop() {
   scrollTo(0);
 }
 
+// To the About section ("Over"), which starts where the hero ends. The
+// hero's height, not a measured position: a panel that is still sliding shut
+// would be measured along.
+export function scrollPastHero() {
+  const hero = document.getElementById("hero-screen");
+  if (hero) scrollTo(hero.offsetHeight);
+}
+
 // Leaving a project: its hero grows back into the carousel, which has to be
 // seen, so the page returns to the hero first and only then goes home. An
 // interrupted scroll (the visitor takes over) never calls `leave`.

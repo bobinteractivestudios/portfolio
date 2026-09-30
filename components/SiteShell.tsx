@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMotionValueEvent, useScroll } from "framer-motion";
@@ -12,10 +12,16 @@ import MarginContact from "./MarginContact";
 import SmoothScroll from "./SmoothScroll";
 import HeroSlideshow from "./HeroSlideshow";
 import { useMeasure } from "@/lib/useMeasure";
-import { revealProject, scrollToTop, scrollToTopThen } from "@/lib/scroll";
+import { revealProject, scrollPastHero, scrollToTop, scrollToTopThen } from "@/lib/scroll";
 import styles from "./SiteShell.module.css";
 
 type Panel = "none" | "nav" | "projects";
+
+// Whether the hero has left the viewport, given the height of an open nav
+// panel above it. From layout sizes rather than a measured position, which
+// would include a strip that is still sliding.
+const isPastHero = (hero: HTMLElement | null, navOffset = 0) =>
+  hero !== null && window.scrollY >= hero.offsetHeight + navOffset - 1;
 
 export default function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -43,8 +49,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   const chromeRef = useRef<HTMLDivElement>(null);
   const navHeight = navSize.height;
   useMotionValueEvent(scrollY, "change", (y) => {
-    const hero = heroRef.current;
-    const past = hero ? hero.getBoundingClientRect().bottom <= 0 : false;
+    const past = isPastHero(heroRef.current, isNavOpen ? navHeight : 0);
     setPastHero(past);
     if (past) setActionsShown(true);
     if (chromeRef.current && isNavOpen) {
@@ -56,10 +61,21 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
     chromeRef.current.style.translate = `0 ${isNavOpen ? -Math.min(scrollY.get(), navHeight) : 0}px`;
   }, [isNavOpen, navHeight, scrollY]);
 
-  const isProjectOpen = pathname !== "/";
-  // Closing a project happens at its hero, where the transition back into the
-  // carousel plays: from further down the page it scrolls up there first.
-  const closeProject = () => scrollToTopThen(() => router.push("/", { scroll: false }));
+  const isHome = pathname === "/";
+  const isProjectOpen = pathname.startsWith("/projecten/");
+  // The blog and the programme: pages of their own inside the shell, without
+  // the hero. Only its top bar stays (.heroCollapsed).
+  const isContentPage = !isHome && !isProjectOpen;
+  // Arriving on one, the hero first leaves (HeroSlideshow's `hidden`); only
+  // once it is gone does its screen collapse and the page's content come in.
+  const [heroGone, setHeroGone] = useState(isContentPage);
+  const onHeroHidden = useCallback(() => setHeroGone(true), []);
+  const isHeroCollapsed = isContentPage && heroGone;
+  // There is no hero to scroll past there, so the corner glyphs always show.
+  const showActions = pastHero || isHeroCollapsed;
+  // Going home happens at the hero, where a project's transition back into
+  // the carousel plays: from further down the page it scrolls up there first.
+  const goHome = () => scrollToTopThen(() => router.push("/", { scroll: false }));
 
   // The shell stays mounted across / and /projecten/[slug] (it is their shared
   // layout), so a link inside a panel has to close that panel itself.
@@ -67,17 +83,22 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
     setPrevPathname(pathname);
     setActivePanel("none");
     setActionsShown(false);
+    if (!isContentPage) setHeroGone(false);
   }
 
   // Only the content below the hero changes on navigation, and the links pass
-  // `scroll: false`, so the scroll position is ours to move: back to the hero,
-  // which HeroSlideshow animates when a project opens.
-  const lastPathname = useRef(pathname);
+  // `scroll: false`, so the scroll position is ours to move: back to the top
+  // (where HeroSlideshow animates an opening project), or to the About section
+  // for "Over" from another page.
+  const lastPathname = useRef<string | null>(null);
   useEffect(() => {
     if (lastPathname.current === pathname) return;
+    const isFirstLoad = lastPathname.current === null;
     lastPathname.current = pathname;
-    if (pathname !== "/" || !window.location.hash) scrollToTop();
-  }, [pathname]);
+    if (isFirstLoad) return;
+    if (isHome && window.location.hash === "#about") scrollPastHero();
+    else if (!isHome || !window.location.hash) scrollToTop();
+  }, [pathname, isHome]);
 
   // The strip's resting transform depends on navSize/projectsSize, which are
   // only known once the client has measured the panels. The server-rendered
@@ -121,13 +142,13 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
           onToggle={() => setActivePanel((p) => (p === "projects" ? "none" : "projects"))}
         />
         <MarginContact />
-        {isProjectOpen && (
+        {!isHome && (
           <div
             className={
               `${styles.actions} ` +
-              `${pastHero ? styles.actionsVisible : actionsShown ? styles.actionsLeaving : ""}`
+              `${showActions ? styles.actionsVisible : actionsShown ? styles.actionsLeaving : ""}`
             }
-            aria-hidden={!pastHero}
+            aria-hidden={!showActions}
           >
             {/* Both glyphs are built from one vertical line: see the entrance
                 in SiteShell.module.css. */}
@@ -143,10 +164,10 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
                 className={styles.action}
                 onClick={(event) => {
                   event.preventDefault();
-                  closeProject();
+                  goHome();
                 }}
-                aria-label="Project sluiten"
-                tabIndex={pastHero ? 0 : -1}
+                aria-label="Sluiten"
+                tabIndex={showActions ? 0 : -1}
               >
                 <svg viewBox="0 0 14 14" aria-hidden="true">
                   <g className={styles.cross}>
@@ -160,7 +181,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
                 className={styles.action}
                 onClick={scrollToTop}
                 aria-label="Terug naar boven"
-                tabIndex={pastHero ? 0 : -1}
+                tabIndex={showActions ? 0 : -1}
               >
                 <svg viewBox="0 0 14 14" aria-hidden="true">
                   <path className={styles.stem} d="M7 1v12" />
@@ -204,20 +225,34 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
               if (!isProjectOpen) return;
               // Links, buttons and the hero keep their own behaviour.
               if ((event.target as Element).closest("a, button, [data-own-click]")) return;
-              closeProject();
+              goHome();
             }}
           >
             <main>
-              <div id="hero-screen" className={styles.heroScreen} ref={heroRef}>
+              <div
+                id="hero-screen"
+                className={`${styles.heroScreen} ${isHeroCollapsed ? styles.heroCollapsed : ""}`}
+                ref={heroRef}
+              >
                 <div className={styles.topBar}>
                   <Header
                     isOpen={isNavOpen}
                     onToggle={() => setActivePanel((p) => (p === "nav" ? "none" : "nav"))}
                   />
                 </div>
-                <HeroSlideshow />
+                <HeroSlideshow hidden={isContentPage} onHidden={onHeroHidden} />
               </div>
-              {children}
+              {isContentPage ? (
+                // Keyed per page, so each one gets the reveal.
+                <div
+                  key={pathname}
+                  className={isHeroCollapsed ? styles.contentIn : styles.contentWaiting}
+                >
+                  {children}
+                </div>
+              ) : (
+                children
+              )}
             </main>
           </div>
         </div>

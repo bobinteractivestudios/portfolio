@@ -160,6 +160,8 @@
   position: absolute;
   left: calc(50% - 7px);
   opacity: 0;
+  /* They lie over the glyphs and must not take their clicks. */
+  pointer-events: none;
 }
 
 /* From the top of the cross's stem to the bottom of the arrow's. */
@@ -463,6 +465,42 @@
   padding: var(--page-margin);
   background: var(--bg);
   animation: heroMarginIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* On the blog and the programme only the top bar is left of the hero: the
+   screen shrinks to its top margin, which leaves the frame no height. Hidden
+   rather than removed, so the carousel keeps running and is simply there
+   again, without replaying its entrance, on the way back home. The bottom
+   padding belongs to that entrance animation (heroMarginIn), so it is
+   cancelled out instead of removed. */
+.heroCollapsed {
+  min-height: 0;
+  margin-bottom: calc(-1 * var(--page-margin));
+}
+
+.heroCollapsed > :not(.topBar) {
+  visibility: hidden;
+}
+
+/* A blog or programme page waits out of sight while the hero leaves, then
+   comes in like a project's content does (projectIn in Project.module.css). */
+.contentWaiting {
+  visibility: hidden;
+}
+
+.contentIn {
+  animation: contentIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes contentIn {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @keyframes heroMarginIn {

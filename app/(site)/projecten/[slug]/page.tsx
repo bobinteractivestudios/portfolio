@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import Footer from "@/components/Footer";
 import { projects, getProject } from "@/lib/projects";
 import styles from "@/components/Project.module.css";
 
@@ -53,8 +52,6 @@ export default async function ProjectPage({ params }: PageProps<"/projecten/[slu
           />
         ))}
       </div>
-
-      <Footer />
     </article>
   );
 }

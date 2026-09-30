@@ -35,12 +35,25 @@ const SWIPE_DISTANCE_THRESHOLD = 80;
 const SWIPE_VELOCITY_THRESHOLD = 500;
 const SNAP_DURATION = 0.5;
 const SHRINK_AMOUNT = 0.14; // matches the 0.86 scale used in the auto-advance transition
-// The shrink leg of the auto-advance transition, on its own.
+// The shrink and slide legs of the auto-advance transition, on their own, and
+// how far (in frame widths) a slide travels to be out of the frame.
 const SHRINK_DURATION = DURATION * TIMES[1];
+const SLIDE_DURATION = DURATION * (TIMES[2] - TIMES[1]);
+const OFFSCREEN = 1.15;
 
 type DragInfo = { offset: { x: number }; velocity: { x: number } };
 
-export default function HeroSlideshow() {
+// `hidden`: the page has no hero (blog, programme). The slide leaves the way
+// an autoplay transition takes one out, shrinking and then sliding off to the
+// left, and `onHidden` reports when it is gone; it comes back the way one
+// enters, sliding in from the right and then growing.
+export default function HeroSlideshow({
+  hidden,
+  onHidden,
+}: {
+  hidden: boolean;
+  onHidden: () => void;
+}) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [prevIndex, setPrevIndex] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -56,6 +69,12 @@ export default function HeroSlideshow() {
   const routeIndex = slides.findIndex((slide) => slide.href === pathname);
   const isProjectOpen = routeIndex !== -1;
   const [lastRouteIndex, setLastRouteIndex] = useState(routeIndex);
+  const [lastHidden, setLastHidden] = useState(hidden);
+  if (hidden !== lastHidden) {
+    setLastHidden(hidden);
+    // Leaves only the slide that carries `x`, which is the one that moves.
+    setPrevIndex(null);
+  }
   // The project whose title lies under the hero (see .title in the CSS). It
   // outlives the route by the time the hero takes to grow back over it.
   const [titleIndex, setTitleIndex] = useState<number | null>(isProjectOpen ? routeIndex : null);
@@ -86,21 +105,38 @@ export default function HeroSlideshow() {
   const transitioning = prevIndex !== null;
 
   useEffect(() => {
-    if (isDragging || !CAN_SLIDE || isProjectOpen) return;
+    if (isDragging || !CAN_SLIDE || isProjectOpen || hidden) return;
     const id = setInterval(() => {
       setPrevIndex(activeIndex);
       setActiveIndex((current) => (current + 1) % images.length);
     }, INTERVAL);
     return () => clearInterval(id);
-  }, [activeIndex, isDragging, isProjectOpen]);
+  }, [activeIndex, isDragging, isProjectOpen, hidden]);
 
   useEffect(() => {
-    const controls = animate(openScale, isProjectOpen ? 1 - SHRINK_AMOUNT : 1, {
-      duration: SHRINK_DURATION,
-      ease: "easeInOut",
-    });
-    return () => controls.stop();
-  }, [isProjectOpen, openScale]);
+    const width = frameRef.current?.offsetWidth || window.innerWidth;
+    const small = 1 - SHRINK_AMOUNT;
+    const restScale = isProjectOpen ? small : 1;
+    const shrink = { duration: SHRINK_DURATION, ease: "easeInOut" } as const;
+    const slide = { duration: SLIDE_DURATION, ease: "easeInOut" } as const;
+    let controls;
+    if (hidden) {
+      controls = [
+        animate(openScale, small, shrink),
+        animate(x, -OFFSCREEN * width, { ...slide, delay: SHRINK_DURATION, onComplete: onHidden }),
+      ];
+    } else if (Math.abs(x.get()) > width) {
+      // Still off to the side from having been hidden: enter from the right.
+      if (x.get() < 0) x.set(OFFSCREEN * width);
+      controls = [
+        animate(x, 0, slide),
+        animate(openScale, restScale, { ...shrink, delay: SLIDE_DURATION }),
+      ];
+    } else {
+      controls = [animate(openScale, restScale, shrink)];
+    }
+    return () => controls.forEach((control) => control.stop());
+  }, [hidden, isProjectOpen, openScale, x, onHidden]);
 
   useEffect(() => {
     if (isProjectOpen) return;
@@ -166,7 +202,7 @@ export default function HeroSlideshow() {
   // The slide label types itself out, and deletes itself when a project opens
   // or the slide changes. Its first entrance waits for the page-load zoom-out
   // (heroMarginIn) to open the margin it sits in.
-  const labelText = useTypewriter(isProjectOpen ? "" : active.label, 1000);
+  const labelText = useTypewriter(isProjectOpen || hidden ? "" : active.label, 1000);
 
   return (
     <>
@@ -238,7 +274,7 @@ export default function HeroSlideshow() {
       )}
       {/* Typed out and deleted rather than mounted and unmounted, so it stays
           until the last character of its exit is gone. */}
-      {(!isProjectOpen || labelText !== "") && (
+      {((!isProjectOpen && !hidden) || labelText !== "") && (
         <Link
           href={active.href}
           scroll={false}
@@ -246,7 +282,7 @@ export default function HeroSlideshow() {
           aria-label={active.label}
           onClick={(event) => {
             event.preventDefault();
-            if (!isProjectOpen) toggleActive();
+            if (!isProjectOpen && !hidden) toggleActive();
           }}
         >
           {labelText}

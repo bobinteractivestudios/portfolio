@@ -6,37 +6,6 @@
   color: var(--fg);
 }
 
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding-bottom: clamp(32px, 7vw, 72px);
-}
-
-.wordmark {
-  font-weight: 700;
-  font-size: clamp(1.05rem, 1.7vw, 1.5rem);
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  transition: opacity 0.2s ease;
-}
-
-.wordmark:hover {
-  opacity: 0.65;
-}
-
-.back {
-  font-size: 0.85rem;
-  letter-spacing: 0.02em;
-  opacity: 0.55;
-  transition: opacity 0.2s ease;
-}
-
-.back:hover {
-  opacity: 1;
-}
-
 .hero {
   display: flex;
   flex-direction: column;

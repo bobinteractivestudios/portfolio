@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import Footer from "./Footer";
 import { motion, useAnimationFrame, useMotionValue, type Variants } from "framer-motion";
-import SmoothScroll from "./SmoothScroll";
 import styles from "./ProgramPage.module.css";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -256,17 +253,6 @@ export default function ProgramPage() {
 
   return (
     <div className={styles.page}>
-      <SmoothScroll />
-
-      <div className={styles.topbar}>
-        <Link href="/" className={styles.wordmark}>
-          Bob van Boekel
-        </Link>
-        <Link href="/" className={styles.back}>
-          ← Terug naar home
-        </Link>
-      </div>
-
       <header className={styles.hero}>
         <span className={styles.kicker}>{intro.kicker}</span>
         <h1 className={styles.title}>Programma</h1>
@@ -346,8 +332,6 @@ export default function ProgramPage() {
           ))}
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }
