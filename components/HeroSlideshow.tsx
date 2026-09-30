@@ -113,11 +113,12 @@ export default function HeroSlideshow() {
   }
 
   // The hero stays put and the project loads below it (see SiteShell), so
-  // opening is a navigation without Next's own scroll handling.
-  function openActive() {
+  // opening is a navigation without Next's own scroll handling. Tapping the
+  // hero of the open project is the inverse: back home, where it grows back
+  // into the carousel.
+  function toggleActive() {
     const { href } = slides[activeIndex];
-    if (pathname === href) revealProject();
-    else router.push(href, { scroll: false });
+    router.push(pathname === href ? "/" : href, { scroll: false });
   }
 
   function handleDragStart() {
@@ -194,7 +195,7 @@ export default function HeroSlideshow() {
               style={{ ...slideStyles[activeIndex], x, scale: currentScale }}
               drag={CAN_SLIDE ? "x" : false}
               dragMomentum={false}
-              onTap={openActive}
+              onTap={toggleActive}
               onDragStart={handleDragStart}
               onDrag={handleDrag}
               onDragEnd={handleDragEnd}
@@ -213,7 +214,9 @@ export default function HeroSlideshow() {
         }
         onClick={(event) => {
           event.preventDefault();
-          openActive();
+          // The title of the open project nudges the page down to its intro.
+          if (isProjectOpen) revealProject();
+          else toggleActive();
         }}
       >
         {isProjectOpen ? active.title : active.label}
