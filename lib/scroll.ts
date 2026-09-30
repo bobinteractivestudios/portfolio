@@ -22,8 +22,11 @@ function scrollTo(target: number, onComplete?: () => void) {
   lenis.scrollTo(target, { onComplete });
 }
 
-export function scrollToTop() {
-  scrollTo(0);
+// `immediate` jumps: for a new page that replaces one scrolled down.
+export function scrollToTop(immediate = false) {
+  if (!immediate) scrollTo(0);
+  else if (lenis) lenis.scrollTo(0, { immediate: true });
+  else window.scrollTo(0, 0);
 }
 
 // Back to the top in step with a panel sliding open (0.5s ease-in-out, the

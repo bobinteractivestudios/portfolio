@@ -11,6 +11,8 @@ import ProjectsTrigger from "./ProjectsTrigger";
 import MarginContact from "./MarginContact";
 import SmoothScroll from "./SmoothScroll";
 import HeroSlideshow from "./HeroSlideshow";
+import FrozenRouter from "./FrozenRouter";
+import { LeavingContext } from "./Reveal";
 import { useMeasure } from "@/lib/useMeasure";
 import {
   revealProject,
@@ -23,6 +25,14 @@ import styles from "./SiteShell.module.css";
 
 type Panel = "none" | "nav" | "projects";
 
+// The blog and the programme: pages of their own inside the shell, without
+// the hero. Only its top bar stays (.heroCollapsed).
+const isContentPath = (path: string) => path !== "/" && !path.startsWith("/projecten/");
+
+// How long a blog or programme page takes to leave: its reveals played
+// backwards (Reveal.tsx) and the rest faded (.mainLeaving).
+const EXIT_MS = 650;
+
 // Whether the hero has left the viewport, given the height of an open nav
 // panel above it. From layout sizes rather than a measured position, which
 // would include a strip that is still sliding.
@@ -31,6 +41,19 @@ const isPastHero = (hero: HTMLElement | null, navOffset = 0) =>
 
 export default function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  // The page on screen. It follows the address at once, except when leaving
+  // a blog or programme page: that stays (FrozenRouter) while it plays its
+  // exit, and only then makes way. Everything that lays out the page follows
+  // this rather than the address, so the next page only starts coming in
+  // (the hero, the new page's reveals) once the old one is gone.
+  const [shownPath, setShownPath] = useState(pathname);
+  if (pathname !== shownPath && !isContentPath(shownPath)) setShownPath(pathname);
+  const isLeaving = pathname !== shownPath;
+  useEffect(() => {
+    if (!isLeaving) return;
+    const timeout = setTimeout(() => setShownPath(pathname), EXIT_MS);
+    return () => clearTimeout(timeout);
+  }, [isLeaving, pathname]);
   const router = useRouter();
   const [activePanel, setActivePanel] = useState<Panel>("none");
   const [prevPathname, setPrevPathname] = useState(pathname);
@@ -70,11 +93,9 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
     chromeRef.current.style.translate = `0 ${isNavOpen ? -Math.min(scrollY.get(), navHeight) : 0}px`;
   }, [isNavOpen, navHeight, scrollY]);
 
-  const isHome = pathname === "/";
-  const isProjectOpen = pathname.startsWith("/projecten/");
-  // The blog and the programme: pages of their own inside the shell, without
-  // the hero. Only its top bar stays (.heroCollapsed).
-  const isContentPage = !isHome && !isProjectOpen;
+  const isHome = shownPath === "/";
+  const isProjectOpen = shownPath.startsWith("/projecten/");
+  const isContentPage = isContentPath(shownPath);
   // Arriving on one, the hero first leaves (HeroSlideshow's `hidden`); only
   // once it is gone does its screen collapse and the page's content come in.
   const [heroGone, setHeroGone] = useState(isContentPage);
@@ -84,13 +105,22 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   const showActions = pastHero || isHeroCollapsed;
   // Going home happens at the hero, where a project's transition back into
   // the carousel plays: from further down the page it scrolls up there first.
-  const goHome = () => scrollToTopThen(() => router.push("/", { scroll: false }));
+  // A blog or programme page instead leaves from where it is.
+  const goHome = () => {
+    const leave = () => router.push("/", { scroll: false });
+    if (isContentPage) leave();
+    else scrollToTopThen(leave);
+  };
 
   // The shell stays mounted across / and /projecten/[slug] (it is their shared
   // layout), so a link inside a panel has to close that panel itself.
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);
     setActivePanel("none");
+  }
+  const [lastShownPath, setLastShownPath] = useState(shownPath);
+  if (shownPath !== lastShownPath) {
+    setLastShownPath(shownPath);
     setActionsShown(false);
     if (!isContentPage) setHeroGone(false);
   }
@@ -101,17 +131,17 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   // for "Over" from another page.
   const lastPathname = useRef<string | null>(null);
   useEffect(() => {
-    if (lastPathname.current === pathname) return;
+    if (lastPathname.current === shownPath) return;
     const isFirstLoad = lastPathname.current === null;
-    const wasContentPage =
-      !isFirstLoad && lastPathname.current !== "/" && !lastPathname.current!.startsWith("/projecten/");
-    lastPathname.current = pathname;
+    const wasContentPage = !isFirstLoad && isContentPath(lastPathname.current!);
+    lastPathname.current = shownPath;
     if (isFirstLoad) return;
-    // From the blog or the programme the hero was not on the page: it is put
-    // back above the fold unseen, rather than brought in and scrolled past.
+    // After a blog or programme page, which has left the screen empty, the
+    // new page starts in place instead of being scrolled to: the hero is put
+    // back above the fold unseen for "Over", and the top is jumped to.
     if (isHome && window.location.hash === "#about") scrollPastHero(wasContentPage);
-    else if (!isHome || !window.location.hash) scrollToTop();
-  }, [pathname, isHome]);
+    else if (!isHome || !window.location.hash) scrollToTop(wasContentPage);
+  }, [shownPath, isHome]);
 
   // The strip's resting transform depends on navSize/projectsSize, which are
   // only known once the client has measured the panels. The server-rendered
@@ -196,7 +226,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
               <button
                 type="button"
                 className={styles.action}
-                onClick={scrollToTop}
+                onClick={() => scrollToTop()}
                 aria-label="Terug naar boven"
                 tabIndex={showActions ? 0 : -1}
               >
@@ -245,7 +275,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
               goHome();
             }}
           >
-            <main>
+            <main className={isLeaving ? styles.mainLeaving : undefined}>
               <div
                 id="hero-screen"
                 className={`${styles.heroScreen} ${isHeroCollapsed ? styles.heroCollapsed : ""}`}
@@ -265,7 +295,11 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
               </div>
               {/* A blog or programme page only mounts once the hero is gone, so
                   its scroll reveals (Reveal.tsx) play when it can be seen. */}
-              {(!isContentPage || isHeroCollapsed) && children}
+              <LeavingContext.Provider value={isLeaving}>
+                {(!isContentPage || isHeroCollapsed) && (
+                  <FrozenRouter key={shownPath}>{children}</FrozenRouter>
+                )}
+              </LeavingContext.Provider>
             </main>
           </div>
         </div>

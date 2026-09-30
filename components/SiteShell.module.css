@@ -461,6 +461,13 @@
   background: var(--bg);
 }
 
+/* A blog or programme page on its way out: its reveals play backwards
+   (Reveal.tsx), and whatever has no reveal of its own fades after them. */
+.mainLeaving > :not(.heroScreen) {
+  opacity: 0;
+  transition: opacity 0.3s ease 0.3s;
+}
+
 /* On the blog and the programme only the top bar is left of the hero: the
    screen shrinks to its top margin, which leaves the frame no height. Hidden
    rather than removed, so the carousel keeps its state for the way back
