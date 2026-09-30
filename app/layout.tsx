@@ -14,6 +14,16 @@ const maisonNeue = localFont({
 export const metadata: Metadata = {
   title: "Bob van Boekel",
   description: "Portfolio of Bob van Boekel",
+  // The "B" of the logo (Maison Neue Bold), dark on a light browser and light on
+  // a dark one. The first entry is the fallback where `media` is ignored.
+  icons: {
+    icon: [
+      { url: "/icons/favicon-light.png", type: "image/png" },
+      { url: "/icons/favicon-light.png", type: "image/png", media: "(prefers-color-scheme: light)" },
+      { url: "/icons/favicon-dark.png", type: "image/png", media: "(prefers-color-scheme: dark)" },
+    ],
+    apple: "/icons/apple-icon.png",
+  },
 };
 
 export const viewport: Viewport = {
