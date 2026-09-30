@@ -37,6 +37,9 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   const [navRef, navSize] = useMeasure<HTMLElement>();
   const [projectsRef, projectsSize] = useMeasure<HTMLElement>();
   const [ready, setReady] = useState(false);
+  // Turns the strips' transitions on, a couple of frames after `ready`, so the
+  // jump to their measured offsets on page load is not animated.
+  const [animated, setAnimated] = useState(false);
 
   const isNavOpen = activePanel === "nav";
   const isProjectsOpen = activePanel === "projects";
@@ -114,10 +117,14 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   // only revealed here, once we're certain the transform is correct.
   useEffect(() => {
     setReady(true);
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => setAnimated(true));
+    });
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   return (
-    <div className={styles.shell}>
+    <div className={`${styles.shell} ${animated ? styles.shellAnimated : ""}`}>
       <SmoothScroll />
 
       {/* The margin chrome can't live inside the strips: their transform would

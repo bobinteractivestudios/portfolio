@@ -64,6 +64,7 @@ export default function HeroSlideshow({
   // Where the slide is while the page has no hero: see `hidden`.
   const hideY = useMotionValue(0);
   const isOffstage = useRef(hidden);
+  const hasEntered = useRef(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -123,6 +124,18 @@ export default function HeroSlideshow({
     const restScale = isProjectOpen ? small : 1;
     const shrink = { duration: SHRINK_DURATION, ease: "easeInOut" } as const;
     const slide = { duration: SLIDE_DURATION, ease: "easeInOut" } as const;
+    const isLandscape = window.innerWidth > window.innerHeight;
+    // On page load the slide makes the same entrance as on the way back from
+    // a page without a hero: it starts out where it would have left to. (The
+    // shell stays hidden until it has mounted, so this start is never seen.)
+    if (!hasEntered.current) {
+      hasEntered.current = true;
+      if (!hidden) {
+        if (isLandscape) hideY.set(OFFSCREEN * window.innerHeight);
+        else x.set(OFFSCREEN * window.innerWidth);
+        openScale.set(small);
+      }
+    }
     const isAway = Math.abs(x.get()) > 1 || Math.abs(hideY.get()) > 1;
     let controls;
     isOffstage.current = hidden || isAway;
@@ -133,7 +146,7 @@ export default function HeroSlideshow({
       const leave = { ...slide, delay: SHRINK_DURATION, onComplete: onHidden };
       controls = [
         animate(openScale, small, shrink),
-        window.innerWidth > window.innerHeight
+        isLandscape
           ? animate(hideY, OFFSCREEN * window.innerHeight, leave)
           : animate(x, -OFFSCREEN * window.innerWidth, leave),
       ];
@@ -214,8 +227,8 @@ export default function HeroSlideshow({
 
   const active = slides[activeIndex];
   // The slide label types itself out, and deletes itself when a project opens
-  // or the slide changes. Its first entrance waits for the page-load zoom-out
-  // (heroMarginIn) to open the margin it sits in.
+  // or the slide changes. Its first entrance waits for the slide's own
+  // entrance on page load.
   const labelText = useTypewriter(isProjectOpen || hidden ? "" : active.label, 1000);
 
   return (
