@@ -25,17 +25,30 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   const [projectsRef, projectsSize] = useMeasure<HTMLElement>();
   const [ready, setReady] = useState(false);
 
+  const isNavOpen = activePanel === "nav";
+  const isProjectsOpen = activePanel === "projects";
+
   // The close cross and back-to-top arrow of an open project only show once
   // the hero (and the header that scrolls away with it) has left the viewport.
   const heroRef = useRef<HTMLDivElement>(null);
   const [pastHero, setPastHero] = useState(false);
   const { scrollY } = useScroll();
+  // An open nav panel is part of the page and scrolls away with it. The fixed
+  // chrome, pushed down by the panel's height, rides back up with it for as
+  // long as the panel is in view (`translate`, on top of the transform below).
+  const chromeRef = useRef<HTMLDivElement>(null);
+  const navHeight = navSize.height;
   useMotionValueEvent(scrollY, "change", (y) => {
-    setPastHero(y >= (heroRef.current?.offsetHeight ?? Infinity));
+    const hero = heroRef.current;
+    setPastHero(hero ? hero.getBoundingClientRect().bottom <= 0 : false);
+    if (chromeRef.current && isNavOpen) {
+      chromeRef.current.style.translate = `0 ${-Math.min(y, navHeight)}px`;
+    }
   });
-
-  const isNavOpen = activePanel === "nav";
-  const isProjectsOpen = activePanel === "projects";
+  useEffect(() => {
+    if (!chromeRef.current) return;
+    chromeRef.current.style.translate = `0 ${isNavOpen ? -Math.min(scrollY.get(), navHeight) : 0}px`;
+  }, [isNavOpen, navHeight, scrollY]);
 
   // The shell stays mounted across / and /projecten/[slug] (it is their shared
   // layout), so a link inside a panel has to close that panel itself.
@@ -74,7 +87,8 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
           transition as the strips, so it still moves as one sheet with them.
           The header is not part of it: it scrolls away with the hero. */}
       <div
-        className={styles.chrome}
+        ref={chromeRef}
+        className={`${styles.chrome} ${isNavOpen ? styles.chromeRiding : ""}`}
         style={{
           transform: `translate(${isProjectsOpen ? projectsSize.width : 0}px, ${
             isNavOpen ? navSize.height : 0
@@ -92,28 +106,38 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
             className={`${styles.actions} ${pastHero ? styles.actionsVisible : ""}`}
             aria-hidden={!pastHero}
           >
-            <Link
-              href="/"
-              scroll={false}
-              className={styles.action}
-              aria-label="Project sluiten"
-              tabIndex={pastHero ? 0 : -1}
-            >
-              <svg viewBox="0 0 10 10" aria-hidden="true">
-                <path d="M0.5 0.5l9 9M9.5 0.5l-9 9" />
-              </svg>
-            </Link>
-            <button
-              type="button"
-              className={styles.action}
-              onClick={scrollToTop}
-              aria-label="Terug naar boven"
-              tabIndex={pastHero ? 0 : -1}
-            >
-              <svg viewBox="0 0 10 10" aria-hidden="true">
-                <path d="M5 10V0.5M0.5 5L5 0.5 9.5 5" />
-              </svg>
-            </button>
+            {/* Both glyphs are built from one vertical line: see the entrance
+                in SiteShell.module.css. */}
+            <div className={styles.rig}>
+              <span className={styles.bridge} />
+              <Link
+                href="/"
+                scroll={false}
+                className={styles.action}
+                aria-label="Project sluiten"
+                tabIndex={pastHero ? 0 : -1}
+              >
+                <svg viewBox="0 0 14 14" aria-hidden="true">
+                  <g className={styles.cross}>
+                    <path d="M7 1v12" />
+                    <path className={styles.crossBar} d="M7 1v12" />
+                  </g>
+                </svg>
+              </Link>
+              <button
+                type="button"
+                className={styles.action}
+                onClick={scrollToTop}
+                aria-label="Terug naar boven"
+                tabIndex={pastHero ? 0 : -1}
+              >
+                <svg viewBox="0 0 14 14" aria-hidden="true">
+                  <path d="M7 1v12" />
+                  <path className={styles.flankLeft} d="M7 1v5.5" />
+                  <path className={styles.flankRight} d="M7 1v5.5" />
+                </svg>
+              </button>
+            </div>
           </div>
         )}
       </div>

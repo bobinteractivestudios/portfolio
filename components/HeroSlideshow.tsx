@@ -56,12 +56,16 @@ export default function HeroSlideshow() {
   const isProjectOpen = routeIndex !== -1;
   const [lastRouteIndex, setLastRouteIndex] = useState(routeIndex);
   const [hasNavigated, setHasNavigated] = useState(false);
+  // The project whose title lies under the hero (see .title in the CSS). It
+  // outlives the route by the time the hero takes to grow back over it.
+  const [titleIndex, setTitleIndex] = useState<number | null>(isProjectOpen ? routeIndex : null);
   if (routeIndex !== lastRouteIndex) {
     setLastRouteIndex(routeIndex);
     setHasNavigated(true);
     if (isProjectOpen) {
       setActiveIndex(routeIndex);
       setPrevIndex(null);
+      setTitleIndex(routeIndex);
     }
   }
 
@@ -98,6 +102,12 @@ export default function HeroSlideshow() {
     });
     return () => controls.stop();
   }, [isProjectOpen, openScale]);
+
+  useEffect(() => {
+    if (isProjectOpen) return;
+    const timeout = setTimeout(() => setTitleIndex(null), SHRINK_DURATION * 1000);
+    return () => clearTimeout(timeout);
+  }, [isProjectOpen]);
 
   useEffect(() => {
     if (prevIndex === null) return;
@@ -191,7 +201,10 @@ export default function HeroSlideshow() {
             )}
             <motion.div
               key={`current-${activeIndex}`}
-              className={`${styles.slide} ${styles.current} ${CAN_SLIDE ? styles.draggable : ""}`}
+              className={
+                `${styles.slide} ${styles.current} ${CAN_SLIDE ? styles.draggable : ""} ` +
+                `${isProjectOpen ? styles.closable : ""}`
+              }
               style={{ ...slideStyles[activeIndex], x, scale: currentScale }}
               drag={CAN_SLIDE ? "x" : false}
               dragMomentum={false}
@@ -203,24 +216,33 @@ export default function HeroSlideshow() {
           </>
         )}
       </div>
-      {/* Keyed per state so the label remounts and fades in again. */}
-      <Link
-        key={isProjectOpen ? `title-${activeIndex}` : "label"}
-        href={active.href}
-        scroll={false}
-        className={
-          `${styles.label} ${isProjectOpen ? styles.title : ""} ` +
-          `${hasNavigated ? styles.instant : ""}`
-        }
-        onClick={(event) => {
-          event.preventDefault();
-          // The title of the open project nudges the page down to its intro.
-          if (isProjectOpen) revealProject();
-          else toggleActive();
-        }}
-      >
-        {isProjectOpen ? active.title : active.label}
-      </Link>
+      {titleIndex !== null && (
+        <Link
+          href={slides[titleIndex].href}
+          scroll={false}
+          className={`${styles.label} ${styles.title}`}
+          onClick={(event) => {
+            event.preventDefault();
+            // The title of the open project nudges the page down to its intro.
+            if (isProjectOpen) revealProject();
+          }}
+        >
+          {slides[titleIndex].title}
+        </Link>
+      )}
+      {!isProjectOpen && (
+        <Link
+          href={active.href}
+          scroll={false}
+          className={`${styles.label} ${hasNavigated ? styles.instant : ""}`}
+          onClick={(event) => {
+            event.preventDefault();
+            toggleActive();
+          }}
+        >
+          {active.label}
+        </Link>
+      )}
     </>
   );
 }

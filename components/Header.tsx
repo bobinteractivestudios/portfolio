@@ -27,15 +27,7 @@ export default function Header({
         className={styles.social}
         aria-label="Instagram"
       >
-        {/* viewBox hugs the outline (stroke included) so the box CSS sizes
-            and aligns is exactly what is drawn. */}
-        <svg
-          viewBox="2.1 2.1 19.8 19.8"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          aria-hidden="true"
-        >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
           <rect x="3" y="3" width="18" height="18" rx="5" />
           <circle cx="12" cy="12" r="4.2" />
           <circle cx="17.3" cy="6.7" r="0.6" fill="currentColor" stroke="none" />

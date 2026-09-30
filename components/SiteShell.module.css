@@ -21,6 +21,14 @@
   z-index: 40;
   visibility: hidden;
   pointer-events: none;
+  transition:
+    transform 0.5s ease-in-out,
+    translate 0.5s ease-in-out;
+}
+
+/* While the nav panel is open `translate` follows the scroll position (see
+   SiteShell.tsx), so it must not ease. */
+.chromeRiding {
   transition: transform 0.5s ease-in-out;
 }
 
@@ -28,7 +36,7 @@
    frame, which overflows into the margin while it zooms out on page load. */
 .topBar {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   top: 0;
   left: 0;
   right: 0;
@@ -51,17 +59,23 @@
 
 /* An open project's close cross with a back-to-top arrow directly below it,
    in the corner where the top and right margins meet, once the page has
-   scrolled past the hero (.actionsVisible). Compact glyphs, as wide as the
-   margin labels are (the cap height of their 0.8rem type) and drawn as thin
-   as their strokes. */
+   scrolled past the hero (.actionsVisible). Compact glyphs drawn from 12px
+   lines at the weight of the margin labels.
+
+   Entrance: one vertical line swoops in from the top, breaks in two at the
+   glyphs (the bridge between them retracts), then the upper half leans over
+   to one side and a copy of itself swings off to the other to form the cross,
+   while the lower half splits two flanks off its tip to become the arrow. The resting styles are
+   the finished glyphs; the keyframes only describe where they come from. */
 .actions {
-  --action-size: 1.75rem;
+  --action-size: 1.625rem;
+  --line: 1.25px;
+  --swoop: 0.5s;
+  --ease: cubic-bezier(0.65, 0, 0.35, 1);
   position: absolute;
   top: calc((var(--page-margin) - var(--action-size)) / 2);
   right: 0;
   width: var(--page-margin);
-  display: flex;
-  flex-direction: column;
   opacity: 0;
   visibility: hidden;
   transition:
@@ -73,6 +87,13 @@
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
+  transition: none;
+}
+
+.rig {
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .action {
@@ -84,20 +105,121 @@
 }
 
 .action svg {
-  width: 0.56rem;
-  height: 0.56rem;
+  width: 14px;
+  height: 14px;
   overflow: visible;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.2px;
-}
-
-.action path {
-  vector-effect: non-scaling-stroke;
+  stroke-width: var(--line);
 }
 
 .action:hover {
   opacity: 0.55;
+}
+
+/* Joins the two glyphs' lines into one during the swoop. */
+.bridge {
+  position: absolute;
+  top: calc(var(--action-size) / 2 + 6px);
+  left: calc(50% - var(--line) / 2);
+  width: var(--line);
+  height: calc(var(--action-size) - 12px);
+  background: currentColor;
+  transform: scaleY(0);
+}
+
+.cross,
+.crossBar {
+  transform-origin: 7px 7px;
+}
+
+.cross {
+  transform: rotate(45deg);
+}
+
+.crossBar {
+  transform: rotate(-90deg);
+}
+
+.flankLeft,
+.flankRight {
+  transform-origin: 7px 1px;
+}
+
+.flankLeft {
+  transform: rotate(45deg);
+}
+
+.flankRight {
+  transform: rotate(-45deg);
+}
+
+.actionsVisible .rig {
+  animation: actionsSwoop var(--swoop) cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.actionsVisible .bridge {
+  animation: actionsBreak 0.25s var(--ease) calc(var(--swoop) - 0.1s) both;
+}
+
+.actionsVisible .cross {
+  animation: actionsTurn 0.3s var(--ease) calc(var(--swoop) + 0.1s) both;
+}
+
+.actionsVisible .crossBar {
+  animation: actionsBar 0.3s var(--ease) calc(var(--swoop) + 0.4s) both;
+}
+
+.actionsVisible .flankLeft {
+  animation: actionsFlankLeft 0.35s var(--ease) calc(var(--swoop) + 0.1s) both;
+}
+
+.actionsVisible .flankRight {
+  animation: actionsFlankRight 0.35s var(--ease) calc(var(--swoop) + 0.1s) both;
+}
+
+@keyframes actionsSwoop {
+  from {
+    transform: translateY(calc(-100% - var(--page-margin)));
+  }
+}
+
+@keyframes actionsBreak {
+  from {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes actionsBar {
+  from {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes actionsTurn {
+  from {
+    transform: rotate(0deg);
+  }
+}
+
+/* Folded back along the shaft, so the arrow starts as a bare line. */
+@keyframes actionsFlankLeft {
+  from {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes actionsFlankRight {
+  from {
+    transform: rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actionsVisible .rig,
+  .actionsVisible .rig * {
+    animation: none;
+  }
 }
 
 .vStrip {

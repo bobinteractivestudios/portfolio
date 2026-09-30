@@ -1,7 +1,11 @@
+/* Stacked above the project title, which lies under the image until it
+   shrinks (.title). The frame itself lets clicks through to that title. */
 .frame {
   position: relative;
+  z-index: 1;
   flex: 1;
   overflow: hidden;
+  pointer-events: none;
   animation: frameZoomOut 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -20,6 +24,7 @@
   background-size: cover;
   background-position: center;
   will-change: transform;
+  pointer-events: auto;
 }
 
 /* On a portrait phone `cover` leaves only a narrow column of a landscape
@@ -39,6 +44,16 @@
   cursor: grabbing;
 }
 
+/* Clicking the hero of an open project closes it: the pointer is the close
+   cross. */
+.closable,
+.closable:active {
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32' fill='none'%3E%3Cpath d='M8 8l16 16M24 8L8 24' stroke='%23111' stroke-width='2'/%3E%3C/svg%3E")
+      16 16,
+    pointer;
+}
+
 /* Sits in the bottom page margin, under the frame's left corner. Fades in
    late so it doesn't overlap the image while heroMarginIn opens the margin. */
 .label {
@@ -48,8 +63,9 @@
   height: var(--page-margin);
   display: flex;
   align-items: center;
+  font-family: var(--font-mono);
   font-size: clamp(0.62rem, 1vw, 0.75rem);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   white-space: nowrap;
   color: rgba(var(--fg-rgb), 0.5);
   transition: color 0.2s ease;
@@ -64,13 +80,16 @@
 /* An open project's title, in the logo's type (.logo in Header.module.css).
    The hero sits at 0.86 scale (SHRINK_AMOUNT in HeroSlideshow.tsx), i.e. inset
    by 7% of the frame on every side; together with the page margin that leaves
-   a strip under the image, and the title is centred at the top of it. */
+   a strip under the image, and the title is centred at the top of it. It has
+   no entrance of its own: it lies under the full-size image and the shrink
+   uncovers it. */
 .title {
   left: 50%;
   transform: translateX(-50%);
   height: calc(var(--page-margin) + 0.07 * (100% - 2 * var(--page-margin)));
   align-items: flex-start;
   padding-top: clamp(10px, 1.2vw, 18px);
+  font-family: inherit;
   font-weight: 700;
   font-size: clamp(1.05rem, 1.7vw, 1.5rem);
   line-height: 1;
@@ -78,11 +97,7 @@
   text-transform: uppercase;
   color: var(--fg);
   transition: opacity 0.2s ease;
-}
-
-/* Wait for the image to shrink out of the strip. */
-.title.instant {
-  animation-delay: 0.45s;
+  animation: none;
 }
 
 .title:hover {
