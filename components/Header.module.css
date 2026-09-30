@@ -21,7 +21,7 @@
 }
 
 /* Set like a glyph of the logo: same font-size, as tall as its capitals
-   (0.7em in Maison Neue Bold) and standing on its baseline, which sits 0.24em
+   (0.7em in Maison Neue Bold) and standing on its baseline, which sits 0.225em
    above the bottom of the logo's line-height: 1 box. */
 .social {
   display: flex;
@@ -33,7 +33,7 @@
 .social svg {
   width: 0.7em;
   height: 0.7em;
-  margin-bottom: 0.24em;
+  margin-bottom: 0.225em;
 }
 
 .social:hover {

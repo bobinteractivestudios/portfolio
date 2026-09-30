@@ -2,10 +2,12 @@
   position: relative;
 }
 
+/* As wide as the viewport *without* the scrollbar, like the fixed chrome, so
+   the hero's edges line up with it; the panel and page overflow it (100vw
+   would run the page under a classic scrollbar). */
 .hStrip {
   display: flex;
   align-items: stretch;
-  width: max-content;
   visibility: hidden;
   transition: transform 0.5s ease-in-out;
 }
@@ -83,7 +85,7 @@
 .vStrip {
   display: flex;
   flex-direction: column;
-  width: 100vw;
+  width: 100%;
   flex-shrink: 0;
   transition: transform 0.5s ease-in-out;
 }

@@ -10,7 +10,12 @@ export function useMeasure<T extends HTMLElement>() {
     const el = ref.current;
     if (!el) return;
 
-    const update = () => setSize({ width: el.offsetWidth, height: el.offsetHeight });
+    // Fractional sizes, not offsetWidth/offsetHeight: rounding them leaves the
+    // page up to half a pixel off the fixed chrome it has to line up with.
+    const update = () => {
+      const { width, height } = el.getBoundingClientRect();
+      setSize({ width, height });
+    };
     update();
 
     const observer = new ResizeObserver(update);
