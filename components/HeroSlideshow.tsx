@@ -43,10 +43,10 @@ const OFFSCREEN = 1.15;
 
 type DragInfo = { offset: { x: number }; velocity: { x: number } };
 
-// `hidden`: the page has no hero (blog, programme). The slide leaves the way
-// an autoplay transition takes one out, shrinking and then sliding off to the
-// left, and `onHidden` reports when it is gone; it comes back the way one
-// enters, sliding in from the right and then growing.
+// `hidden`: the page has no hero (blog, programme). The slide leaves like one
+// in an autoplay transition, shrinking first and then sliding out of the
+// frame, and `onHidden` reports when it is gone; it comes back the same way
+// in reverse, sliding in and then growing.
 export default function HeroSlideshow({
   hidden,
   onHidden,
@@ -61,6 +61,9 @@ export default function HeroSlideshow({
   const frameRef = useRef<HTMLDivElement>(null);
   const widthRef = useRef(1);
   const x = useMotionValue(0);
+  // Where the slide is while the page has no hero: see `hidden`.
+  const hideY = useMotionValue(0);
+  const isOffstage = useRef(hidden);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -90,6 +93,8 @@ export default function HeroSlideshow({
   const peekX = useTransform(x, (v) => (v < 0 ? widthRef.current + v : -widthRef.current + v));
 
   const scaleFromOffset = (v: number) => {
+    // Leaving for a page without a hero moves `x` too, but is no drag.
+    if (isOffstage.current) return 1;
     const progress = Math.min(Math.abs(v) / widthRef.current, 1);
     return 1 - SHRINK_AMOUNT * progress;
   };
@@ -114,29 +119,38 @@ export default function HeroSlideshow({
   }, [activeIndex, isDragging, isProjectOpen, hidden]);
 
   useEffect(() => {
-    const width = frameRef.current?.offsetWidth || window.innerWidth;
     const small = 1 - SHRINK_AMOUNT;
     const restScale = isProjectOpen ? small : 1;
     const shrink = { duration: SHRINK_DURATION, ease: "easeInOut" } as const;
     const slide = { duration: SLIDE_DURATION, ease: "easeInOut" } as const;
+    const isAway = Math.abs(x.get()) > 1 || Math.abs(hideY.get()) > 1;
     let controls;
+    isOffstage.current = hidden || isAway;
     if (hidden) {
+      // Out by the shorter way: down on a landscape screen, sideways (like the
+      // carousel) on a portrait one. The viewport's size stands in for the
+      // frame's, which has none while its screen is collapsed.
+      const leave = { ...slide, delay: SHRINK_DURATION, onComplete: onHidden };
       controls = [
         animate(openScale, small, shrink),
-        animate(x, -OFFSCREEN * width, { ...slide, delay: SHRINK_DURATION, onComplete: onHidden }),
+        window.innerWidth > window.innerHeight
+          ? animate(hideY, OFFSCREEN * window.innerHeight, leave)
+          : animate(x, -OFFSCREEN * window.innerWidth, leave),
       ];
-    } else if (Math.abs(x.get()) > width) {
-      // Still off to the side from having been hidden: enter from the right.
-      if (x.get() < 0) x.set(OFFSCREEN * width);
+    } else if (isAway) {
+      // Back from having been hidden: up again from below, or, having left
+      // sideways, in from the right as a carousel slide enters.
+      if (x.get() < 0) x.set(OFFSCREEN * window.innerWidth);
       controls = [
-        animate(x, 0, slide),
+        animate(x, 0, { ...slide, onComplete: () => (isOffstage.current = false) }),
+        animate(hideY, 0, slide),
         animate(openScale, restScale, { ...shrink, delay: SLIDE_DURATION }),
       ];
     } else {
       controls = [animate(openScale, restScale, shrink)];
     }
     return () => controls.forEach((control) => control.stop());
-  }, [hidden, isProjectOpen, openScale, x, onHidden]);
+  }, [hidden, isProjectOpen, openScale, x, hideY, onHidden]);
 
   useEffect(() => {
     if (isProjectOpen) return;
@@ -247,7 +261,7 @@ export default function HeroSlideshow({
                 `${styles.slide} ${styles.current} ${CAN_SLIDE ? styles.draggable : ""} ` +
                 `${isProjectOpen ? styles.closable : ""}`
               }
-              style={{ ...slideStyles[activeIndex], x, scale: currentScale }}
+              style={{ ...slideStyles[activeIndex], x, y: hideY, scale: currentScale }}
               drag={CAN_SLIDE ? "x" : false}
               dragMomentum={false}
               onTap={toggleActive}
