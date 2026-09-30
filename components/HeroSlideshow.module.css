@@ -51,8 +51,8 @@
   cursor: var(--cursor-close);
 }
 
-/* Sits in the bottom page margin, under the frame's left corner. Fades in
-   late so it doesn't overlap the image while heroMarginIn opens the margin. */
+/* Sits in the bottom page margin, under the frame's left corner. Its text is
+   typed out and deleted by useTypewriter (see HeroSlideshow.tsx). */
 .label {
   position: absolute;
   left: var(--page-margin);
@@ -63,15 +63,9 @@
   font-family: var(--font-mono);
   font-size: clamp(0.62rem, 1vw, 0.75rem);
   letter-spacing: 0.02em;
-  white-space: nowrap;
+  white-space: pre;
   color: rgba(var(--fg-rgb), 0.5);
   transition: color 0.2s ease;
-  animation: labelIn 0.4s ease 1s both;
-}
-
-/* After the first navigation there is no entrance animation left to wait for. */
-.instant {
-  animation-delay: 0s;
 }
 
 /* An open project's title, in the logo's type (.logo in Header.module.css).
@@ -94,7 +88,6 @@
   text-transform: uppercase;
   color: var(--fg);
   transition: opacity 0.2s ease;
-  animation: none;
 }
 
 .title:hover {
@@ -103,13 +96,4 @@
 
 .label:hover {
   color: var(--fg);
-}
-
-@keyframes labelIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }

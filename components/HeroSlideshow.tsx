@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { projects } from "@/lib/projects";
 import { revealProject, scrollToTopThen } from "@/lib/scroll";
+import { useTypewriter } from "@/lib/useTypewriter";
 import styles from "./HeroSlideshow.module.css";
 
 const slides = projects.map((project, i) => ({
@@ -55,13 +56,11 @@ export default function HeroSlideshow() {
   const routeIndex = slides.findIndex((slide) => slide.href === pathname);
   const isProjectOpen = routeIndex !== -1;
   const [lastRouteIndex, setLastRouteIndex] = useState(routeIndex);
-  const [hasNavigated, setHasNavigated] = useState(false);
   // The project whose title lies under the hero (see .title in the CSS). It
   // outlives the route by the time the hero takes to grow back over it.
   const [titleIndex, setTitleIndex] = useState<number | null>(isProjectOpen ? routeIndex : null);
   if (routeIndex !== lastRouteIndex) {
     setLastRouteIndex(routeIndex);
-    setHasNavigated(true);
     if (isProjectOpen) {
       setActiveIndex(routeIndex);
       setPrevIndex(null);
@@ -164,6 +163,10 @@ export default function HeroSlideshow() {
   }
 
   const active = slides[activeIndex];
+  // The slide label types itself out, and deletes itself when a project opens
+  // or the slide changes. Its first entrance waits for the page-load zoom-out
+  // (heroMarginIn) to open the margin it sits in.
+  const labelText = useTypewriter(isProjectOpen ? "" : active.label, 1000);
 
   return (
     <>
@@ -233,17 +236,20 @@ export default function HeroSlideshow() {
           {slides[titleIndex].title}
         </Link>
       )}
-      {!isProjectOpen && (
+      {/* Typed out and deleted rather than mounted and unmounted, so it stays
+          until the last character of its exit is gone. */}
+      {(!isProjectOpen || labelText !== "") && (
         <Link
           href={active.href}
           scroll={false}
-          className={`${styles.label} ${hasNavigated ? styles.instant : ""}`}
+          className={styles.label}
+          aria-label={active.label}
           onClick={(event) => {
             event.preventDefault();
-            toggleActive();
+            if (!isProjectOpen) toggleActive();
           }}
         >
-          {active.label}
+          {labelText}
         </Link>
       )}
     </>
