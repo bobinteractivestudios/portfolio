@@ -32,7 +32,7 @@
   bottom: 0;
   width: var(--page-margin);
   pointer-events: auto;
-  cursor: default;
+  cursor: var(--cursor-default);
 }
 
 .gutterLeft {

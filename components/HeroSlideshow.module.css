@@ -37,7 +37,7 @@
 }
 
 .current {
-  cursor: pointer;
+  cursor: var(--cursor-pointer);
 }
 
 .draggable:active {
