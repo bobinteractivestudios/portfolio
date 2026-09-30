@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Reveal, RevealGroup, RevealLine } from "@/components/Reveal";
 import { posts, getPost, formatDate } from "@/lib/posts";
 import styles from "@/components/Blog.module.css";
 
@@ -29,30 +30,38 @@ export default async function BlogPost({ params }: PageProps<"/blog/[slug]">) {
 
   return (
     <article className={styles.article}>
-      <header className={styles.hero}>
-        <time dateTime={post.date} className={styles.kicker}>
-          {formatDate(post.date)}
-        </time>
-        <h1 className={styles.postTitle}>{post.title}</h1>
-      </header>
+      <RevealGroup as="header" className={styles.hero}>
+        <Reveal as="span" className={styles.kicker}>
+          <time dateTime={post.date}>{formatDate(post.date)}</time>
+        </Reveal>
+        <RevealLine as="h1" className={styles.postTitle}>
+          {post.title}
+        </RevealLine>
+      </RevealGroup>
 
       <div className={styles.body}>
         {post.quote && (
-          <figure className={styles.quote}>
+          <RevealGroup as="figure" className={styles.quote}>
             <blockquote>
               {post.quote.text.map((line, i) => (
-                <p key={i}>{line}</p>
+                <Reveal as="p" key={i}>
+                  {line}
+                </Reveal>
               ))}
             </blockquote>
-            <figcaption className={styles.caption}>{post.quote.source}</figcaption>
-          </figure>
+            <figcaption className={styles.caption}>
+              <Reveal as="span">{post.quote.source}</Reveal>
+            </figcaption>
+          </RevealGroup>
         )}
         {post.body.map((paragraph, i) => (
-          <p key={i}>{paragraph}</p>
+          <Reveal as="p" solo key={i}>
+            {paragraph}
+          </Reveal>
         ))}
       </div>
 
-      <Link href="/blog" className={styles.allPosts}>
+      <Link href="/blog" scroll={false} className={styles.allPosts}>
         ← Alle posts
       </Link>
     </article>

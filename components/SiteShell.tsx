@@ -242,17 +242,9 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
                 </div>
                 <HeroSlideshow hidden={isContentPage} onHidden={onHeroHidden} />
               </div>
-              {isContentPage ? (
-                // Keyed per page, so each one gets the reveal.
-                <div
-                  key={pathname}
-                  className={isHeroCollapsed ? styles.contentIn : styles.contentWaiting}
-                >
-                  {children}
-                </div>
-              ) : (
-                children
-              )}
+              {/* A blog or programme page only mounts once the hero is gone, so
+                  its scroll reveals (Reveal.tsx) play when it can be seen. */}
+              {(!isContentPage || isHeroCollapsed) && children}
             </main>
           </div>
         </div>

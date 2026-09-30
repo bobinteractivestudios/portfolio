@@ -1,0 +1,13 @@
+/* Clips a RevealLine to its own line. The padding keeps descenders of tight
+   headings (line-height below 1) inside the clip; the margin takes it back
+   out of the layout. */
+.mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.line {
+  display: block;
+}

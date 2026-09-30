@@ -1,15 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useAnimationFrame, useMotionValue, type Variants } from "framer-motion";
+import { motion, useAnimationFrame, useMotionValue } from "framer-motion";
+import { Reveal, RevealGroup, RevealLine } from "./Reveal";
 import styles from "./ProgramPage.module.css";
-
-const EASE = [0.16, 1, 0.3, 1] as const;
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 28 },
-  visible: { opacity: 1, y: 0 },
-};
 
 type Section = {
   id: string;
@@ -253,21 +247,20 @@ export default function ProgramPage() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.hero}>
-        <span className={styles.kicker}>{intro.kicker}</span>
-        <h1 className={styles.title}>Programma</h1>
-        <p className={styles.slogan}>{intro.slogan}</p>
-        <motion.p
-          className={styles.introText}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.4 }}
-          variants={fadeUp}
-          transition={{ duration: 0.7, ease: EASE }}
-        >
+      <RevealGroup as="header" className={styles.hero}>
+        <Reveal as="span" className={styles.kicker}>
+          {intro.kicker}
+        </Reveal>
+        <RevealLine as="h1" className={styles.title}>
+          Programma
+        </RevealLine>
+        <Reveal as="p" className={styles.slogan}>
+          {intro.slogan}
+        </Reveal>
+        <Reveal as="p" className={styles.introText}>
           {intro.body}
-        </motion.p>
-      </header>
+        </Reveal>
+      </RevealGroup>
 
       <div className={styles.layout}>
         <nav className={styles.toc} aria-label="Inhoudsopgave" ref={tocWrapRef}>
@@ -293,7 +286,8 @@ export default function ProgramPage() {
 
         <div className={styles.sections}>
           {sections.map((section) => (
-            <section
+            <RevealGroup
+              as="section"
               key={section.id}
               id={section.id}
               ref={(el) => {
@@ -301,9 +295,13 @@ export default function ProgramPage() {
               }}
               className={styles.section}
             >
-              <span className={styles.sectionIndex}>{section.index}</span>
-              <h2 className={styles.sectionTitle}>{section.title}</h2>
-              <div className={styles.sectionBody}>
+              <Reveal as="span" className={styles.sectionIndex}>
+                {section.index}
+              </Reveal>
+              <RevealLine as="h2" className={styles.sectionTitle}>
+                {section.title}
+              </RevealLine>
+              <Reveal className={styles.sectionBody}>
                 {section.subsections ? (
                   <div className={styles.subsections}>
                     {section.subsections.map((sub) => (
@@ -320,15 +318,17 @@ export default function ProgramPage() {
                     <p key={i}>{paragraph}</p>
                   ))
                 )}
-              </div>
+              </Reveal>
               {section.points && (
                 <ul className={styles.points}>
                   {section.points.map((point) => (
-                    <li key={point}>{point}</li>
+                    <Reveal as="li" key={point}>
+                      {point}
+                    </Reveal>
                   ))}
                 </ul>
               )}
-            </section>
+            </RevealGroup>
           ))}
         </div>
       </div>

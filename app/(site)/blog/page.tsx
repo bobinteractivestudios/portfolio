@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Reveal, RevealGroup, RevealLine } from "@/components/Reveal";
 import { posts, formatDate } from "@/lib/posts";
 import styles from "@/components/Blog.module.css";
 
@@ -11,22 +12,30 @@ export const metadata: Metadata = {
 export default function Blog() {
   return (
     <>
-      <header className={styles.hero}>
-        <span className={styles.kicker}>Schrijfsels</span>
-        <h1 className={styles.title}>Blog</h1>
-      </header>
+      <RevealGroup as="header" className={styles.hero}>
+        <Reveal as="span" className={styles.kicker}>
+          Schrijfsels
+        </Reveal>
+        <RevealLine as="h1" className={styles.title}>
+          Blog
+        </RevealLine>
+      </RevealGroup>
 
       <ul className={styles.list}>
         {posts.map((post) => (
-          <li key={post.slug} className={styles.item}>
-            <Link href={`/blog/${post.slug}`} className={styles.itemLink}>
-              <time dateTime={post.date} className={styles.date}>
-                {formatDate(post.date)}
-              </time>
-              <h2 className={styles.itemTitle}>{post.title}</h2>
-              <p className={styles.excerpt}>{post.body[0]}</p>
+          <RevealGroup as="li" key={post.slug} className={styles.item}>
+            <Link href={`/blog/${post.slug}`} scroll={false} className={styles.itemLink}>
+              <Reveal as="span" className={styles.date}>
+                <time dateTime={post.date}>{formatDate(post.date)}</time>
+              </Reveal>
+              <RevealLine as="h2" className={styles.itemTitle}>
+                {post.title}
+              </RevealLine>
+              <Reveal as="p" className={styles.excerpt}>
+                {post.body[0]}
+              </Reveal>
             </Link>
-          </li>
+          </RevealGroup>
         ))}
       </ul>
     </>
