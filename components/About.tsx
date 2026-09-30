@@ -111,7 +111,6 @@ export default function About() {
                 alt="Bob van Boekel"
                 fill
                 sizes="(max-width: 700px) 40vw, 220px"
-                className={styles.portraitImage}
                 style={{ objectFit: "cover" }}
                 priority={false}
               />

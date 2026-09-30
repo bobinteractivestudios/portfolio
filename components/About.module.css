@@ -51,11 +51,6 @@
   overflow: hidden;
 }
 
-.portraitImage {
-  transform: scale(1.3);
-  transform-origin: 50% 60%;
-}
-
 .skillsBlock {
   display: flex;
   flex-direction: column;
