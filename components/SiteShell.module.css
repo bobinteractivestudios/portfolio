@@ -79,17 +79,31 @@
    scrolled past the hero (.actionsVisible). Compact glyphs drawn from 12px
    lines at the weight of the margin labels.
 
-   Entrance: one vertical line swoops in from the top, breaks in two at the
-   glyphs (the bridge between them retracts), then the upper half leans over
-   to one side and a copy of itself swings off to the other to form the cross,
-   while the lower half splits two flanks off its tip to become the arrow. The resting styles are
-   the finished glyphs; the keyframes only describe where they come from.
-   The exit (.actionsLeaving, below) runs the same thing backwards. */
+   Entrance: one vertical line swoops in from the top and parts in the middle,
+   each half drawing back to its glyph's own line (the "stem"). The upper stem
+   then leans over to one side and a copy of it swings off to the other to form
+   the cross, while the lower one splits two flanks off its tip to become the
+   arrow. The resting styles are the finished glyphs; the keyframes only
+   describe where they come from. The exit (.actionsLeaving, below) runs it
+   backwards.
+
+   The line must read as one stroke of one weight, so exactly one stroke is
+   drawn at any point along it at any time. Stacked or butted strokes
+   anti-alias into heavier stretches, nodes and seams. Hence the stand-ins
+   (.strand): first the whole line, then its two halves, then the stems, each
+   swapped for the next at an instant where they cover the same pixels, and
+   the bar and flanks stay undrawn until they leave the stem they lie on. */
 .actions {
-  --action-size: 1.625rem;
+  --action-size: 26px;
   --line: 1.25px;
   --swoop: 0.5s;
+  /* When the line parts, how long that takes, and when the glyphs form. */
+  --part: calc(var(--swoop) - 0.1s);
+  --parting: 0.25s;
+  --form: calc(var(--part) + var(--parting));
   --ease: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Where a stem starts inside its action, and so half the gap between two. */
+  --stem-inset: calc(var(--action-size) / 2 - 6px);
   position: absolute;
   top: calc((var(--page-margin) - var(--action-size)) / 2);
   right: 0;
@@ -122,33 +136,51 @@
   transition: opacity 0.2s ease;
 }
 
-.action svg {
+.action svg,
+.strand {
   width: 14px;
-  height: 14px;
   overflow: visible;
   fill: none;
   stroke: currentColor;
   stroke-width: var(--line);
+}
+
+.action svg {
+  height: 14px;
 }
 
 .action:hover {
   opacity: 0.55;
 }
 
-/* Joins the two glyphs' lines into one during the swoop. An SVG stroke like
-   theirs, in a box laid out like theirs, so all three render at exactly the
-   same weight and position. */
-.bridge {
+/* Stand-ins for the stems while they are one line. SVG strokes like the
+   stems, in boxes laid out like the glyphs', so a swap changes no pixel. */
+.strand {
   position: absolute;
-  top: calc(var(--action-size) / 2 + 6px);
   left: calc(50% - 7px);
-  width: 14px;
-  height: calc(var(--action-size) - 12px);
-  overflow: visible;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: var(--line);
-  transform: scaleY(0);
+  opacity: 0;
+}
+
+/* From the top of the cross's stem to the bottom of the arrow's. */
+.whole {
+  top: var(--stem-inset);
+  height: calc(var(--action-size) + 12px);
+}
+
+/* A stem plus its half of the gap; parting clips the gap's half away. */
+.halfTop,
+.halfBottom {
+  height: calc(12px + var(--stem-inset));
+}
+
+.halfTop {
+  top: var(--stem-inset);
+  clip-path: inset(0 0 var(--stem-inset) 0);
+}
+
+.halfBottom {
+  top: var(--action-size);
+  clip-path: inset(var(--stem-inset) 0 0 0);
 }
 
 .cross,
@@ -181,24 +213,33 @@
   animation: actionsSwoop var(--swoop) cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.actionsVisible .bridge {
-  animation: actionsBreak 0.25s var(--ease) calc(var(--swoop) - 0.1s) both;
+.actionsVisible .whole {
+  animation: actionsDrawn var(--part) linear;
+}
+
+.actionsVisible .halfTop {
+  animation: actionsPartTop var(--parting) var(--ease) var(--part);
+}
+
+.actionsVisible .halfBottom {
+  animation: actionsPartBottom var(--parting) var(--ease) var(--part);
+}
+
+.actionsVisible .stem {
+  animation: actionsUndrawn var(--form) linear;
 }
 
 .actionsVisible .cross {
-  animation: actionsTurn 0.3s var(--ease) calc(var(--swoop) + 0.1s) both;
+  animation: actionsTurn 0.3s var(--ease) var(--form) both;
 }
 
 .actionsVisible .crossBar {
-  animation: actionsBar 0.3s var(--ease) calc(var(--swoop) + 0.4s) both;
+  animation: actionsBar 0.3s var(--ease) calc(var(--form) + 0.3s) both;
 }
 
-.actionsVisible .flankLeft {
-  animation: actionsFlankLeft 0.35s var(--ease) calc(var(--swoop) + 0.1s) both;
-}
-
+.actionsVisible .flankLeft,
 .actionsVisible .flankRight {
-  animation: actionsFlankRight 0.35s var(--ease) calc(var(--swoop) + 0.1s) both;
+  animation: actionsFlank 0.35s var(--ease) var(--form) both;
 }
 
 @keyframes actionsSwoop {
@@ -207,15 +248,38 @@
   }
 }
 
-@keyframes actionsBreak {
-  from {
-    transform: scaleY(1);
+/* Hold an element drawn, or undrawn, for as long as the animation runs. */
+@keyframes actionsDrawn {
+  from,
+  to {
+    opacity: 1;
   }
 }
 
-@keyframes actionsBar {
+@keyframes actionsUndrawn {
+  from,
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes actionsPartTop {
   from {
-    transform: rotate(0deg);
+    opacity: 1;
+    clip-path: inset(0);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes actionsPartBottom {
+  from {
+    opacity: 1;
+    clip-path: inset(0);
+  }
+  to {
+    opacity: 1;
   }
 }
 
@@ -225,26 +289,37 @@
   }
 }
 
-/* Folded back along the shaft, so the arrow starts as a bare line. */
-@keyframes actionsFlankLeft {
+/* Lying on the cross's stem until it swings off it. */
+@keyframes actionsBar {
   from {
+    opacity: 0;
     transform: rotate(0deg);
+  }
+  1% {
+    opacity: 1;
   }
 }
 
-@keyframes actionsFlankRight {
+/* Folded back along the shaft, so the arrow starts as a bare line. */
+@keyframes actionsFlank {
   from {
+    opacity: 0;
     transform: rotate(0deg);
+  }
+  1% {
+    opacity: 1;
   }
 }
 
 /* Exit, on scrolling back up to the hero: the entrance played backwards. The
-   glyphs fold back into their lines, the lines join up and leave the way they
-   came. Separate keyframes, because swapping only the direction of a finished
-   animation does not replay it. */
+   glyphs fold back into their stems, the stems join up and the line leaves the
+   way it came. Separate keyframes, because swapping only the direction of a
+   finished animation does not replay it. */
 .actionsLeaving {
+  --join: 0.6s;
+  --leave: calc(var(--join) + var(--parting));
   opacity: 1;
-  transition: visibility 0s 1.2s;
+  transition: visibility 0s calc(var(--leave) + var(--swoop));
 }
 
 .actionsLeaving .crossBar {
@@ -260,16 +335,32 @@
   animation: actionsFlankOut 0.35s var(--ease) 0.25s both;
 }
 
-.actionsLeaving .bridge {
-  animation: actionsJoin 0.25s var(--ease) 0.55s both;
+.actionsLeaving .stem {
+  animation: actionsUndrawn 1s linear var(--join) forwards;
+}
+
+.actionsLeaving .halfTop {
+  animation: actionsJoinTop var(--parting) var(--ease) var(--join);
+}
+
+.actionsLeaving .halfBottom {
+  animation: actionsJoinBottom var(--parting) var(--ease) var(--join);
+}
+
+.actionsLeaving .whole {
+  animation: actionsDrawn 1s linear var(--leave) forwards;
 }
 
 .actionsLeaving .rig {
-  animation: actionsSwoopOut var(--swoop) cubic-bezier(0.7, 0, 0.84, 0) 0.7s both;
+  animation: actionsSwoopOut var(--swoop) cubic-bezier(0.7, 0, 0.84, 0) var(--leave) both;
 }
 
 @keyframes actionsBarOut {
+  99% {
+    opacity: 1;
+  }
   to {
+    opacity: 0;
     transform: rotate(0deg);
   }
 }
@@ -281,14 +372,32 @@
 }
 
 @keyframes actionsFlankOut {
+  99% {
+    opacity: 1;
+  }
   to {
+    opacity: 0;
     transform: rotate(0deg);
   }
 }
 
-@keyframes actionsJoin {
+@keyframes actionsJoinTop {
+  from {
+    opacity: 1;
+  }
   to {
-    transform: scaleY(1);
+    opacity: 1;
+    clip-path: inset(0);
+  }
+}
+
+@keyframes actionsJoinBottom {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0);
   }
 }
 

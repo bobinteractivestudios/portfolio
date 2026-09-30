@@ -132,9 +132,11 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
             {/* Both glyphs are built from one vertical line: see the entrance
                 in SiteShell.module.css. */}
             <div className={styles.rig}>
-              <svg className={styles.bridge} aria-hidden="true">
-                <line x1="7" y1="0" x2="7" y2="100%" />
-              </svg>
+              {[styles.whole, styles.halfTop, styles.halfBottom].map((part) => (
+                <svg key={part} className={`${styles.strand} ${part}`} aria-hidden="true">
+                  <line x1="7" y1="0" x2="7" y2="100%" />
+                </svg>
+              ))}
               <Link
                 href="/"
                 scroll={false}
@@ -148,7 +150,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
               >
                 <svg viewBox="0 0 14 14" aria-hidden="true">
                   <g className={styles.cross}>
-                    <path d="M7 1v12" />
+                    <path className={styles.stem} d="M7 1v12" />
                     <path className={styles.crossBar} d="M7 1v12" />
                   </g>
                 </svg>
@@ -161,7 +163,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
                 tabIndex={pastHero ? 0 : -1}
               >
                 <svg viewBox="0 0 14 14" aria-hidden="true">
-                  <path d="M7 1v12" />
+                  <path className={styles.stem} d="M7 1v12" />
                   <path className={styles.flankLeft} d="M7 1v5.5" />
                   <path className={styles.flankRight} d="M7 1v5.5" />
                 </svg>
