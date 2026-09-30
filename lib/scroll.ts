@@ -8,9 +8,10 @@ export function registerLenis(instance: Lenis | null) {
   lenis = instance;
 }
 
-function scrollTo(target: number) {
+function scrollTo(target: number, onComplete?: () => void) {
   if (!lenis) {
     window.scrollTo(0, target);
+    onComplete?.();
     return;
   }
   // Lenis skips a scrollTo whose target equals its own idea of where it
@@ -18,11 +19,19 @@ function scrollTo(target: number) {
   if (lenis.targetScroll === target && Math.abs(window.scrollY - target) > 1) {
     lenis.scrollTo(window.scrollY, { immediate: true });
   }
-  lenis.scrollTo(target);
+  lenis.scrollTo(target, { onComplete });
 }
 
 export function scrollToTop() {
   scrollTo(0);
+}
+
+// Leaving a project: its hero grows back into the carousel, which has to be
+// seen, so the page returns to the hero first and only then goes home. An
+// interrupted scroll (the visitor takes over) never calls `leave`.
+export function scrollToTopThen(leave: () => void) {
+  if (window.scrollY < 1) leave();
+  else scrollTo(0, leave);
 }
 
 // Opening a project keeps the hero where it is and only nudges the page far

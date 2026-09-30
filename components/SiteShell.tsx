@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useMotionValueEvent, useScroll } from "framer-motion";
 import Header from "./Header";
 import NavPanel from "./NavPanel";
@@ -12,13 +12,14 @@ import MarginContact from "./MarginContact";
 import SmoothScroll from "./SmoothScroll";
 import HeroSlideshow from "./HeroSlideshow";
 import { useMeasure } from "@/lib/useMeasure";
-import { revealProject, scrollToTop } from "@/lib/scroll";
+import { revealProject, scrollToTop, scrollToTopThen } from "@/lib/scroll";
 import styles from "./SiteShell.module.css";
 
 type Panel = "none" | "nav" | "projects";
 
 export default function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [activePanel, setActivePanel] = useState<Panel>("none");
   const [prevPathname, setPrevPathname] = useState(pathname);
   const [navRef, navSize] = useMeasure<HTMLElement>();
@@ -54,6 +55,11 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
     if (!chromeRef.current) return;
     chromeRef.current.style.translate = `0 ${isNavOpen ? -Math.min(scrollY.get(), navHeight) : 0}px`;
   }, [isNavOpen, navHeight, scrollY]);
+
+  const isProjectOpen = pathname !== "/";
+  // Closing a project happens at its hero, where the transition back into the
+  // carousel plays: from further down the page it scrolls up there first.
+  const closeProject = () => scrollToTopThen(() => router.push("/", { scroll: false }));
 
   // The shell stays mounted across / and /projecten/[slug] (it is their shared
   // layout), so a link inside a panel has to close that panel itself.
@@ -102,12 +108,20 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
           visibility: ready ? "visible" : "hidden",
         }}
       >
+        {/* Clicking anywhere on an open project closes it, except in the side
+            margins: these swallow the click and keep the normal pointer. */}
+        {isProjectOpen && (
+          <>
+            <div className={`${styles.gutter} ${styles.gutterLeft}`} />
+            <div className={`${styles.gutter} ${styles.gutterRight}`} />
+          </>
+        )}
         <ProjectsTrigger
           isOpen={isProjectsOpen}
           onToggle={() => setActivePanel((p) => (p === "projects" ? "none" : "projects"))}
         />
         <MarginContact />
-        {pathname !== "/" && (
+        {isProjectOpen && (
           <div
             className={
               `${styles.actions} ` +
@@ -125,6 +139,10 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
                 href="/"
                 scroll={false}
                 className={styles.action}
+                onClick={(event) => {
+                  event.preventDefault();
+                  closeProject();
+                }}
                 aria-label="Project sluiten"
                 tabIndex={pastHero ? 0 : -1}
               >
@@ -178,7 +196,15 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
         >
           <NavPanel ref={navRef} isOpen={isNavOpen} />
 
-          <div className={styles.page}>
+          <div
+            className={`${styles.page} ${isProjectOpen ? styles.pageClosable : ""}`}
+            onClick={(event) => {
+              if (!isProjectOpen) return;
+              // Links, buttons and the hero keep their own behaviour.
+              if ((event.target as Element).closest("a, button, [data-own-click]")) return;
+              closeProject();
+            }}
+          >
             <main>
               <div id="hero-screen" className={styles.heroScreen} ref={heroRef}>
                 <div className={styles.topBar}>

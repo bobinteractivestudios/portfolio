@@ -4,7 +4,6 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  overflow: hidden;
 }
 
 .logo {
@@ -20,15 +19,23 @@
   opacity: 0.65;
 }
 
+/* The outline is drawn 2.2/24 of the box in from its edges (stroke included).
+   The box is pulled out by that much so the outline itself, not the box,
+   meets the hero's right edge and stands on the logo's baseline, which sits
+   0.225em above the bottom of the logo's line-height: 1 box. */
 .social {
+  --size: clamp(1.1rem, 1.7vw, 1.5rem);
+  --inset: calc(var(--size) * 2.2 / 24);
   display: flex;
+  margin-right: calc(-1 * var(--inset));
+  margin-bottom: calc(clamp(1.05rem, 1.7vw, 1.5rem) * 0.225 - var(--inset));
   color: var(--fg);
   transition: opacity 0.2s ease;
 }
 
 .social svg {
-  width: clamp(1.1rem, 1.7vw, 1.5rem);
-  height: clamp(1.1rem, 1.7vw, 1.5rem);
+  width: var(--size);
+  height: var(--size);
 }
 
 .social:hover {

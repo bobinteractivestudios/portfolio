@@ -26,6 +26,23 @@
     translate 0.5s ease-in-out;
 }
 
+.gutter {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--page-margin);
+  pointer-events: auto;
+  cursor: default;
+}
+
+.gutterLeft {
+  left: 0;
+}
+
+.gutterRight {
+  right: 0;
+}
+
 /* While the nav panel is open `translate` follows the scroll position (see
    SiteShell.tsx), so it must not ease. */
 .chromeRiding {
@@ -303,6 +320,11 @@
 
 .page {
   background: var(--bg);
+}
+
+/* An open project closes on a click anywhere on the page. */
+.pageClosable {
+  cursor: var(--cursor-close);
 }
 
 .heroScreen {

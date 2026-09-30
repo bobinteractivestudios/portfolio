@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { projects } from "@/lib/projects";
-import { revealProject } from "@/lib/scroll";
+import { revealProject, scrollToTopThen } from "@/lib/scroll";
 import styles from "./HeroSlideshow.module.css";
 
 const slides = projects.map((project, i) => ({
@@ -128,7 +128,8 @@ export default function HeroSlideshow() {
   // into the carousel.
   function toggleActive() {
     const { href } = slides[activeIndex];
-    router.push(pathname === href ? "/" : href, { scroll: false });
+    if (pathname === href) scrollToTopThen(() => router.push("/", { scroll: false }));
+    else router.push(href, { scroll: false });
   }
 
   function handleDragStart() {
@@ -166,7 +167,9 @@ export default function HeroSlideshow() {
 
   return (
     <>
-      <div className={styles.frame} ref={frameRef}>
+      {/* data-own-click: SiteShell's click-anywhere-to-close leaves the hero to
+          its own tap handling, which tells a tap from a swipe. */}
+      <div className={styles.frame} ref={frameRef} data-own-click>
         {transitioning ? (
           <>
             <motion.div
