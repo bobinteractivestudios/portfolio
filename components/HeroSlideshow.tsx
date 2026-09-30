@@ -11,6 +11,7 @@ import styles from "./HeroSlideshow.module.css";
 const slides = projects.map((project, i) => ({
   image: project.hero.src,
   href: `/projecten/${project.slug}`,
+  title: project.title,
   label: `[${String(i + 1).padStart(2, "0")}] ${project.kicker.toLowerCase()}: ${project.title}`,
 }));
 const images = slides.map((slide) => slide.image);
@@ -25,6 +26,8 @@ const SWIPE_DISTANCE_THRESHOLD = 80;
 const SWIPE_VELOCITY_THRESHOLD = 500;
 const SNAP_DURATION = 0.5;
 const SHRINK_AMOUNT = 0.14; // matches the 0.86 scale used in the auto-advance transition
+// The shrink leg of the auto-advance transition, on its own.
+const SHRINK_DURATION = DURATION * TIMES[1];
 
 type DragInfo = { offset: { x: number }; velocity: { x: number } };
 
@@ -44,8 +47,10 @@ export default function HeroSlideshow() {
   const routeIndex = slides.findIndex((slide) => slide.href === pathname);
   const isProjectOpen = routeIndex !== -1;
   const [lastRouteIndex, setLastRouteIndex] = useState(routeIndex);
+  const [hasNavigated, setHasNavigated] = useState(false);
   if (routeIndex !== lastRouteIndex) {
     setLastRouteIndex(routeIndex);
+    setHasNavigated(true);
     if (isProjectOpen) {
       setActiveIndex(routeIndex);
       setPrevIndex(null);
@@ -58,8 +63,14 @@ export default function HeroSlideshow() {
     const progress = Math.min(Math.abs(v) / widthRef.current, 1);
     return 1 - SHRINK_AMOUNT * progress;
   };
-  const currentScale = useTransform(x, scaleFromOffset);
-  const peekScale = useTransform(peekX, scaleFromOffset);
+  // An open project's hero stays at the shrunk size of the auto-advance
+  // transition (it shrinks but never slides over), which frees the room under
+  // it for the title (.open in the CSS). `openScale` multiplies into the
+  // drag-derived scales rather than fighting them for the same property.
+  const openScale = useMotionValue(isProjectOpen ? 1 - SHRINK_AMOUNT : 1);
+  const scaleWhenOpen = ([offset, open]: number[]) => scaleFromOffset(offset) * open;
+  const currentScale = useTransform([x, openScale], scaleWhenOpen);
+  const peekScale = useTransform([peekX, openScale], scaleWhenOpen);
 
   const transitioning = prevIndex !== null;
 
@@ -71,6 +82,14 @@ export default function HeroSlideshow() {
     }, INTERVAL);
     return () => clearInterval(id);
   }, [activeIndex, isDragging, isProjectOpen]);
+
+  useEffect(() => {
+    const controls = animate(openScale, isProjectOpen ? 1 - SHRINK_AMOUNT : 1, {
+      duration: SHRINK_DURATION,
+      ease: "easeInOut",
+    });
+    return () => controls.stop();
+  }, [isProjectOpen, openScale]);
 
   useEffect(() => {
     if (prevIndex === null) return;
@@ -175,19 +194,30 @@ export default function HeroSlideshow() {
           </>
         )}
       </div>
+      {/* Keyed per state so the label remounts and fades in again. */}
       <Link
+        key={isProjectOpen ? `title-${activeIndex}` : "label"}
         href={active.href}
         scroll={false}
-        className={styles.label}
+        className={
+          `${styles.label} ${isProjectOpen ? `${styles.open} ${styles.title}` : ""} ` +
+          `${hasNavigated ? styles.instant : ""}`
+        }
         onClick={(event) => {
           event.preventDefault();
           openActive();
         }}
       >
-        {active.label}
+        {isProjectOpen ? active.title : active.label}
       </Link>
       {isProjectOpen && (
-        <Link href="/" scroll={false} className={`${styles.label} ${styles.close}`}>
+        <Link
+          href="/"
+          scroll={false}
+          className={`${styles.label} ${styles.open} ${styles.close} ${
+            hasNavigated ? styles.instant : ""
+          }`}
+        >
           [×] sluiten
         </Link>
       )}

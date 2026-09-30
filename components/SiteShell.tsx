@@ -34,13 +34,13 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   }
 
   // Only the content below the hero changes on navigation, and the links pass
-  // `scroll: false`, so the scroll position is ours to move.
+  // `scroll: false`, so the scroll position is ours to move: back to the hero,
+  // which HeroSlideshow animates when a project opens.
   const lastPathname = useRef(pathname);
   useEffect(() => {
     if (lastPathname.current === pathname) return;
     lastPathname.current = pathname;
-    if (pathname !== "/") revealProject();
-    else if (!window.location.hash) scrollToTop();
+    if (pathname !== "/" || !window.location.hash) scrollToTop();
   }, [pathname]);
 
   // The strip's resting transform depends on navSize/projectsSize, which are

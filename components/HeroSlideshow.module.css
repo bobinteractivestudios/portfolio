@@ -47,10 +47,46 @@
   animation: labelIn 0.4s ease 1s both;
 }
 
+/* After the first navigation there is no entrance animation left to wait for. */
+.instant {
+  animation-delay: 0s;
+}
+
+/* Labels of an open project. Its hero sits at 0.86 scale (SHRINK_AMOUNT in
+   HeroSlideshow.tsx), i.e. inset by 7% of the frame on every side; together
+   with the page margin that leaves a strip under the image, and these hang
+   from the image's bottom corners inside it. */
+.open {
+  --inset-x: calc(var(--page-margin) + 0.07 * (100% - 2 * var(--page-margin)));
+  left: var(--inset-x);
+  height: calc(var(--page-margin) + 0.07 * (100% - 2 * var(--page-margin)));
+  align-items: flex-start;
+  padding-top: clamp(10px, 1.2vw, 18px);
+}
+
+/* Wait for the image to shrink out of the strip. */
+.open.instant {
+  animation-delay: 0.45s;
+}
+
+/* An open project's title, in the logo's type (.logo in Header.module.css). */
+.title {
+  font-weight: 700;
+  font-size: clamp(1.05rem, 1.7vw, 1.5rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--fg);
+  transition: opacity 0.2s ease;
+}
+
+.title:hover {
+  opacity: 0.65;
+}
+
 .close {
   left: auto;
-  right: var(--page-margin);
-  animation: labelIn 0.4s ease both;
+  right: var(--inset-x);
 }
 
 .label:hover {
