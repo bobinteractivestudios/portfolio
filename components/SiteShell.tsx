@@ -67,6 +67,25 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   const isNavOpen = activePanel === "nav";
   const isProjectsOpen = activePanel === "projects";
 
+  // A click outside the open panel shuts it, and does nothing else: it is
+  // caught before it reaches the page, so it can't also open a project or
+  // follow a link. The logo and the Projecten trigger keep their own toggles.
+  useEffect(() => {
+    if (activePanel === "none") return;
+    const panelId = activePanel === "nav" ? "site-nav" : "site-projects";
+    const onClick = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (target.closest(`#${panelId}, [aria-controls="site-nav"], [aria-controls="site-projects"]`)) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      setActivePanel("none");
+    };
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, [activePanel]);
+
   // The close cross and back-to-top arrow of an open project only show once
   // the hero (and the header that scrolls away with it) has left the viewport.
   const heroRef = useRef<HTMLDivElement>(null);
