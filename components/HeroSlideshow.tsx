@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { projects } from "@/lib/projects";
-import { revealProject, scrollToTopThen } from "@/lib/scroll";
+import { revealProject } from "@/lib/scroll";
 import { useTypewriter } from "@/lib/useTypewriter";
 import styles from "./HeroSlideshow.module.css";
 
@@ -196,7 +196,7 @@ export default function HeroSlideshow({
   // into the carousel.
   function toggleActive() {
     const { href } = slides[activeIndex];
-    if (pathname === href) scrollToTopThen(() => router.push("/", { scroll: false }));
+    if (pathname === href) router.push("/", { scroll: false });
     else router.push(href, { scroll: false });
   }
 

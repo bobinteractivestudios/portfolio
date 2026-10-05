@@ -18,7 +18,6 @@ import {
   revealProject,
   scrollPastHero,
   scrollToTop,
-  scrollToTopThen,
   scrollToTopWithPanel,
 } from "@/lib/scroll";
 import styles from "./SiteShell.module.css";
@@ -122,14 +121,8 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   const isHeroCollapsed = isContentPage && heroGone;
   // There is no hero to scroll past there, so the corner glyphs always show.
   const showActions = pastHero || isHeroCollapsed;
-  // Going home happens at the hero, where a project's transition back into
-  // the carousel plays: from further down the page it scrolls up there first.
-  // A blog or programme page instead leaves from where it is.
-  const goHome = () => {
-    const leave = () => router.push("/", { scroll: false });
-    if (isContentPage) leave();
-    else scrollToTopThen(leave);
-  };
+  // Going home leaves from where the page is, without scrolling up first.
+  const goHome = () => router.push("/", { scroll: false });
 
   // The shell stays mounted across / and /projecten/[slug] (it is their shared
   // layout), so a link inside a panel has to close that panel itself.

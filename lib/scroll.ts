@@ -59,14 +59,6 @@ export function scrollPastHero(immediate = false) {
   } else window.scrollTo(0, hero.offsetHeight);
 }
 
-// Leaving a project: its hero grows back into the carousel, which has to be
-// seen, so the page returns to the hero first and only then goes home. An
-// interrupted scroll (the visitor takes over) never calls `leave`.
-export function scrollToTopThen(leave: () => void) {
-  if (window.scrollY < 1) leave();
-  else scrollTo(0, leave);
-}
-
 // Opening a project keeps the hero where it is and only nudges the page far
 // enough for the project's intro to rise into the lower half of the screen.
 export function revealProject() {
