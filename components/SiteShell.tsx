@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMotionValueEvent, useScroll } from "framer-motion";
@@ -21,6 +21,8 @@ import {
   scrollToTopWithPanel,
 } from "@/lib/scroll";
 import styles from "./SiteShell.module.css";
+
+const subscribeNever = () => () => {};
 
 type Panel = "none" | "nav" | "projects";
 
@@ -58,7 +60,9 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   const [prevPathname, setPrevPathname] = useState(pathname);
   const [navRef, navSize] = useMeasure<HTMLElement>();
   const [projectsRef, projectsSize] = useMeasure<HTMLElement>();
-  const [ready, setReady] = useState(false);
+  // False on the server and while hydrating, true from the first client
+  // render after it (see the strips' flash guard below).
+  const ready = useSyncExternalStore(subscribeNever, () => true, () => false);
   // Turns the strips' transitions on, a couple of frames after `ready`, so the
   // jump to their measured offsets on page load is not animated.
   const [animated, setAnimated] = useState(false);
@@ -160,9 +164,8 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   // HTML (and the first paint before hydration) can't know that value, so it
   // would briefly render with a 0px offset - i.e. the panels open. `.hStrip`
   // stays hidden via CSS by default (no JS required for that part) and is
-  // only revealed here, once we're certain the transform is correct.
+  // only revealed once `ready`, when we're certain the transform is correct.
   useEffect(() => {
-    setReady(true);
     let frame = requestAnimationFrame(() => {
       frame = requestAnimationFrame(() => setAnimated(true));
     });
