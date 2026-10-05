@@ -277,7 +277,7 @@ export default function HeroSlideshow({
             <motion.div
               key={`current-${activeIndex}`}
               className={
-                `${styles.slide} ${styles.current} ${CAN_SLIDE ? styles.draggable : ""} ` +
+                `${styles.slide} ${styles.current} ` +
                 `${isProjectOpen ? styles.closable : ""}`
               }
               style={{ ...slideStyles[activeIndex], x, y: hideY, scale: currentScale }}

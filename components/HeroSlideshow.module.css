@@ -38,10 +38,6 @@
   cursor: var(--cursor-pointer);
 }
 
-.draggable:active {
-  cursor: grabbing;
-}
-
 /* Clicking the hero of an open project closes it: the pointer is the close
    cross. */
 .closable,
